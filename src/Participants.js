@@ -1,6 +1,6 @@
 // GameItem - superclass 
 function GameItem(game, color) {
-    this.color = color || '#fff';
+    this.color = color || 'rgb(200, 200, 200)';
     this.game = game || null;
 }
 // superclass's methods
@@ -8,12 +8,42 @@ GameItem.prototype.update = function() {
     ///
 };
 
+
+GameItem.prototype.bottom = function() {
+    var bot = this.y + this.height;
+  return bot;
+};
+
+GameItem.prototype.right = function() {
+   var right = this.x + this.width;
+   return right;
+};
+
 // Ball - subclass
 function Ball() {
     GameItem.apply(this, arguments); // call super constructor
     this.radius = 5;
+    this.xVelocity = 3;
+    this.yVelocity = 5;
+    this.x = this.game.canvas.width/2 - this.radius;
+    this.y = this.game.canvas.height - this.game.bate.height - this.radius*2;
     this.draw = function() {
-        this.game.drawCircle(this.color, this.x, this.y, this.radius, 0, 2 * Math.PI);
+        this.game.drawCircle(this.color, this.x+this.radius, this.y+this.radius, this.radius);
+    };
+    this.width = this.height = this.radius * 2;
+    
+    this.move = function() {
+        this.x += this.xVelocity;
+        this.y +=this.yVelocity;
+        if (this.x >= this.game.canvas.width || this.x <= 0) {
+            this.xVelocity = - this.xVelocity;
+        }
+        if (this.y >= this.game.canvas.height || this.y <= 0) {
+            this.yVelocity = - this.yVelocity;
+        }
+    };
+    this.update = function() {
+        this.move();
     };
 }
 
@@ -21,7 +51,7 @@ function Bate() {
     GameItem.apply(this, arguments);
     this.width = 60;
     this.height = 10;
-    this.x = 120;
+    this.x = this.game.canvas.width/2 - this.width/2;
     this.y = this.game.canvas.height - this.height;
     this.draw = function() {
         this.game.drawRect(this.color, this.x, this.y, this.width, this.height);
@@ -30,6 +60,7 @@ function Bate() {
 
 function Brick() {
     GameItem.apply(this, arguments);
+    this.hp = 1;
     this.width = 50;
     this.height = 20;
     this.draw = function() {
