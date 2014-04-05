@@ -16,20 +16,24 @@ and open the template in the editor.
                 border: 1px solid black;
             }        
         </style>
-        <script type="text/javascript" src="src/Game.js"></script>
-        <script type="text/javascript" src="src/Participants.js"></script>
+        
+        <script type="text/javascript" src="src/test.js"></script>
     </head>
     <body>
         <canvas id="game_field">
             Your browser  doesn't support canvas!
         </canvas>
         <script type="text/javascript">
-            
+/*
             var game = new Game();
-            game.start();
-            var timer = setTimeout(function(){
-                game.stop();
-            }, 10000);
+            game.drawAll();
+            window.addEventListener('click', function(e) {
+                game.start();
+                var timer = setTimeout(function() {
+                    game.stop();
+                }, 10000);
+            });
+            */
         </script>
     </body>
 </html>

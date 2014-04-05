@@ -5,6 +5,14 @@ function Game() {
     this.ctx = this.canvas.getContext('2d');
     this.bate = new Bate(this);
     this.ball = new Ball(this);
+    
+    this.bricks = [];
+    for (var i=0; i<5; i++) {
+        for (var k=0; k<10; k++) {
+            this.bricks[i][k] = new Brick(this, null, [i,k]);
+        }
+    }
+    
 }
 
 Game.prototype.start = function() {
@@ -39,8 +47,14 @@ Game.prototype.drawCircle = function(color, x, y, rad) {
     ctx.fill();
 };
 
-Game.prototype.drawRect = function(color, x, y, width, height) {
+Game.prototype.drawRect = function(color, x, y, width, height, stroke) {
+    var stroke = stroke || false;
     var ctx = this.ctx;
     ctx.fillStyle = color;
     ctx.fillRect(x, y, width, height);
+    if (stroke) {
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+    }
 };
