@@ -64,17 +64,24 @@ function Bate() {
     };
 }
 
-function Brick(gameObject, color, position) {
+function Brick(gameObject, color, position, collectionObject) {
     GameItem.apply(this, arguments);
+    this.color = color || 'gray';
     this.hp = 1;
+    this.collection = collectionObject;
+    this.position = position;
     this.width = 50;
     this.height = 20;
-    this.x = position[1] * this.width;
-    this.y = position[0] * this.height;
+    this.x = position.place * this.width;
+    this.y = position.row * this.height;
     this.draw = function() {
         this.game.drawRect(this.color, this.x, this.y, this.width, this.height, true);
     };
 }
+
+Brick.prototype.die = function() {
+	this.collection.remove(this);
+};
 
 Ball.prototype = Bate.prototype = Brick.prototype = Object.create(GameItem.prototype);
 Ball.prototype.constructor = Ball;
