@@ -3,25 +3,51 @@ function Game() {
 	this.canvas = document.getElementById('game_field');
 	this.canvas.width = this.canvas.height = 500;
 	this.ctx = this.canvas.getContext('2d');
+	this.inProgress = false;
+	this.isOver = true;
+	this.paused = false;
+	this.brickProportions = {
+		height : 20,
+		width : 50
+	};
 	this.bate = new Bate(this);
 	this.ball = new Ball(this);
 
-	this.bricks = new BricksCollection(this,{
-		rows: 5,
-		inRow: 10,
-	});
+	this.bricks = new BricksCollection(this, {
+		rows : 5,
+		cols : 10,
+	}, this.brickProportions);
 }
 
 Game.prototype.start = function() {
 	var game = this;
+	game.inProgress = true;
+	this.isOver = false;
+	
+	document.addEventListener('mousemove', function(e) {
+		var offset = game.canvas.getBoundingClientRect().left;
+	    //var min = Math.min(((e.clientX-offset) - this.bate.width/2), 0);
+	    var x = (e.clientX-offset) - game.bate.width/2;
+	    if (x < 0 ) {
+	    	x=0;
+	    } else if ( x+game.bate.width > game.canvas.width) {
+	    	x= game.canvas.width - game.bate.width;
+	    }
+	    game.bate.x = x;
+	});
+	
 	this.gameloop = setInterval(function() {
 		game.updateAll();
 		game.drawAll();
 	}, 1000 / this.fps);
 };
 
-Game.prototype.stop = function() {
+Game.prototype.pause = function(gameover) {
+	gameover = gameover || null;
 	clearInterval(this.gameloop);
+	this.inProgress = false;
+	this.isOver = !!(gameover);
+	if (gameover) console.log(gameover);
 };
 
 Game.prototype.drawAll = function() {
@@ -33,7 +59,7 @@ Game.prototype.drawAll = function() {
 
 Game.prototype.updateAll = function() {
 	this.ball.update();
-	// this.bate.update();
+    this.bate.update();
 };
 
 Game.prototype.drawCircle = function(color, x, y, rad) {
@@ -57,16 +83,18 @@ Game.prototype.drawRect = function(color, x, y, width, height, stroke) {
 	}
 };
 
-function BricksCollection(game, setup) {
-	var colors = ['blue', 'green', 'yellow', 'pink', 'orange'];
+function BricksCollection(game, setup, brickProps) {
+	var colors = [ 'blue', 'green', 'yellow', 'pink', 'orange', 'purple', 'aqua' ];
 	this.game = game;
 	this.bricks = [];
+	this.length = setup.rows * setup.cols;
 	for ( var i = 0; i < setup.rows; i++) {
 		this.bricks.push([]);
-		for ( var k = 0; k < setup.inRow; k++) {
+		for ( var k = 0; k < setup.cols; k++) {
 			this.bricks[i][k] = new Brick(this.game, colors[i], {
 				row : i,
-				place : k
+				col : k,
+				proportions : brickProps
 			}, this);
 		}
 	}
@@ -86,14 +114,28 @@ BricksCollection.prototype.draw = function() {
 
 BricksCollection.prototype.add = function(brick) {
 	if (brick instanceof Brick) {
-		var row = brick.position.row, place = brick.position.place;
-		this.bricks[row][place] = brick;
+		var row = brick.position.row, col = brick.position.col;
+		this.bricks[row][col] = brick;
 	} else
 		return;
 
 };
 
 BricksCollection.prototype.remove = function(brick) {
-	var row = brick.position.row, place = brick.position.place;
-	this.bricks[row][place] = null;
+	var row = brick.properties.row, col = brick.properties.col;
+	this.bricks[row][col] = null;
+	this.length--;
+	if (this.length === 0) {
+		this.game.stop();
+	}
+};
+
+BricksCollection.prototype.__defineGetter__('rows', function() {
+	return this.bricks.length;
+});
+BricksCollection.prototype.getBrick = function(row, col) {
+	//console.log(row);
+	var brick = this.bricks[row][col];
+	return (brick) ? brick : null;
+
 };

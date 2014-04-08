@@ -5,36 +5,37 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width">
-        <style type="text/css">
-            #game_field {
-                width: 500px;
-                height: 500px;
-                border: 1px solid black;
-            }        
-        </style>
-        
-        <script type="text/javascript" src="src/Game.js"></script>
-        <script type="text/javascript" src="src/Participants.js"></script>
-    </head>
-    <body>
-        <canvas id="game_field">
+<head>
+<title>TODO supply a title</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<style type="text/css">
+#game_field {
+	width: 500px;
+	height: 500px;
+	border: 1px solid black;
+}
+</style>
+
+<script type="text/javascript" src="src/Game.js"></script>
+<script type="text/javascript" src="src/Participants.js"></script>
+</head>
+<body>
+	<canvas id="game_field">
             Your browser  doesn't support canvas!
         </canvas>
-        <script type="text/javascript">
-
-            var game = new Game();
-            game.drawAll();
-            window.addEventListener('click', function(e) {
-                game.start();
-                var timer = setTimeout(function() {
-                    game.stop();
-                }, 10000);
-            });
-            
-        </script>
-    </body>
+	<script type="text/javascript">
+		var game = new Game();
+		game.drawAll();
+		window.addEventListener('click', function(e) {
+			if (!game.inProgress) {
+				if (game.isOver) {
+					game = new Game();
+				}
+				game.start();
+			} else
+				game.pause();
+		});
+	</script>
+</body>
 </html>
