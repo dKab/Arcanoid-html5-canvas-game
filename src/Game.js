@@ -23,19 +23,19 @@ Game.prototype.start = function() {
 	var game = this;
 	game.inProgress = true;
 	this.isOver = false;
-	
+
 	document.addEventListener('mousemove', function(e) {
 		var offset = game.canvas.getBoundingClientRect().left;
-	    //var min = Math.min(((e.clientX-offset) - this.bate.width/2), 0);
-	    var x = (e.clientX-offset) - game.bate.width/2;
-	    if (x < 0 ) {
-	    	x=0;
-	    } else if ( x+game.bate.width > game.canvas.width) {
-	    	x= game.canvas.width - game.bate.width;
-	    }
-	    game.bate.x = x;
+		// var min = Math.min(((e.clientX-offset) - this.bate.width/2), 0);
+		var x = (e.clientX - offset) - game.bate.width / 2;
+		if (x < 0) {
+			x = 0;
+		} else if (x + game.bate.width > game.canvas.width) {
+			x = game.canvas.width - game.bate.width;
+		}
+		game.bate.x = x;
 	});
-	
+
 	this.gameloop = setInterval(function() {
 		game.updateAll();
 		game.drawAll();
@@ -47,7 +47,8 @@ Game.prototype.pause = function(gameover) {
 	clearInterval(this.gameloop);
 	this.inProgress = false;
 	this.isOver = !!(gameover);
-	if (gameover) console.log(gameover);
+	if (gameover)
+		console.log(gameover);
 };
 
 Game.prototype.drawAll = function() {
@@ -59,7 +60,7 @@ Game.prototype.drawAll = function() {
 
 Game.prototype.updateAll = function() {
 	this.ball.update();
-    this.bate.update();
+	this.bate.update();
 };
 
 Game.prototype.drawCircle = function(color, x, y, rad) {
@@ -71,20 +72,49 @@ Game.prototype.drawCircle = function(color, x, y, rad) {
 	ctx.fill();
 };
 
-Game.prototype.drawRect = function(color, x, y, width, height, stroke) {
-	var stroke = stroke || false;
+Game.prototype.drawRect = function(x, y, width, height, layout) {
 	var ctx = this.ctx;
-	ctx.fillStyle = color;
+	ctx.fillStyle = layout.color;
 	ctx.fillRect(x, y, width, height);
-	if (stroke) {
+	if (layout.stroke) {
 		ctx.strokeStyle = 'black';
 		ctx.lineWidth = 2;
 		ctx.strokeRect(x, y, width, height);
 	}
+	if (!layout.rounded) {
+		var shadow = ctx.createLinearGradient(x, y, x, y + height);
+		shadow.addColorStop(0, 'rgba(0,0,0,0.3)');
+		shadow.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
+		shadow.addColorStop(1, 'rgba(0,0,0, 0.5)');
+		ctx.fillStyle = shadow;
+		ctx.fillRect(x, y, width, height);
+	} else {
+		// var shadow = ctx.createRadialGradient(x+width/2, y+height/2, )
+		ctx.beginPath();
+		var grad = ctx.createLinearGradient(x, y, x, y + height);
+		grad.addColorStop(0, 'rgba(0,0,0,0.3)');
+		grad.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
+		grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
+		ctx.fillStyle = layout.color;
+		ctx.arc(x, y + height / 2, height / 2, Math.PI / 2, Math.PI * 3 / 2);
+		ctx.lineTo(x + width, y);
+		ctx.arc(x + width, y + height / 2, height / 2, Math.PI * 3 / 2,
+				Math.PI / 2);
+		ctx.lineTo(x, y + height);
+		ctx.fill();
+		ctx.fillStyle = grad;
+		ctx.fill();
+	}
+
+};
+
+Game.prototype.drawRoundedRect = function() {
+	//
 };
 
 function BricksCollection(game, setup, brickProps) {
-	var colors = [ 'blue', 'green', 'yellow', 'pink', 'orange', 'purple', 'aqua' ];
+	var colors = [ 'blue', 'green', 'yellow', 'pink', 'orange', 'purple',
+			'aqua' ];
 	this.game = game;
 	this.bricks = [];
 	this.length = setup.rows * setup.cols;
@@ -134,7 +164,7 @@ BricksCollection.prototype.__defineGetter__('rows', function() {
 	return this.bricks.length;
 });
 BricksCollection.prototype.getBrick = function(row, col) {
-	//console.log(row);
+	// console.log(row);
 	var brick = this.bricks[row][col];
 	return (brick) ? brick : null;
 
