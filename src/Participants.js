@@ -87,9 +87,9 @@ Ball.prototype.move = function() {
 
 function Bate() {
 	GameItem.apply(this, arguments);
-	this.color = 'green';
-	this.width = 60;
-	this.height = 10;
+	this.color = '#99CC00';
+	this.width = 80;
+	this.height = 15;
 	this.x = this.game.canvas.width / 2 - this.width / 2;
 	this.y = this.game.canvas.height - this.height;
 

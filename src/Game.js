@@ -7,7 +7,7 @@ function Game() {
 	this.isOver = true;
 	this.paused = false;
 	this.brickProportions = {
-		height : 20,
+		height : 30,
 		width : 50
 	};
 	this.bate = new Bate(this);
@@ -70,18 +70,23 @@ Game.prototype.drawCircle = function(color, x, y, rad) {
 	ctx.arc(x, y, rad, 0, 2 * Math.PI);
 	ctx.closePath();
 	ctx.fill();
+
+	var grad = ctx.createRadialGradient(x - 3, y - 3, 0, x, y, rad);
+	grad.addColorStop(0.150, 'rgba(255,255,255, 0.3)');
+	grad.addColorStop(0.2, 'rgba(0,0,0,0.0)');
+	grad.addColorStop(0.9, 'rgba(0,0,0,0.3)');
+	grad.addColorStop(1, 'rgba(0,0,0,0.1)');
+	ctx.fillStyle = grad;
+	ctx.fill();
 };
 
 Game.prototype.drawRect = function(x, y, width, height, layout) {
 	var ctx = this.ctx;
 	ctx.fillStyle = layout.color;
-	ctx.fillRect(x, y, width, height);
-	if (layout.stroke) {
-		ctx.strokeStyle = 'black';
-		ctx.lineWidth = 2;
-		ctx.strokeRect(x, y, width, height);
-	}
+
+
 	if (!layout.rounded) {
+		ctx.fillRect(x, y, width, height);
 		var shadow = ctx.createLinearGradient(x, y, x, y + height);
 		shadow.addColorStop(0, 'rgba(0,0,0,0.3)');
 		shadow.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
@@ -96,14 +101,20 @@ Game.prototype.drawRect = function(x, y, width, height, layout) {
 		grad.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
 		grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
 		ctx.fillStyle = layout.color;
-		ctx.arc(x, y + height / 2, height / 2, Math.PI / 2, Math.PI * 3 / 2);
-		ctx.lineTo(x + width, y);
-		ctx.arc(x + width, y + height / 2, height / 2, Math.PI * 3 / 2,
-				Math.PI / 2);
-		ctx.lineTo(x, y + height);
+		ctx.arc(x + height / 2, y + height / 2, height / 2, Math.PI / 2,
+				Math.PI * 3 / 2);
+		ctx.lineTo(x + width - height / 2, y);
+		ctx.arc(x + width - height / 2, y + height / 2, height / 2,
+				Math.PI * 3 / 2, Math.PI / 2);
+		ctx.lineTo(x + height / 2, y + height);
 		ctx.fill();
 		ctx.fillStyle = grad;
 		ctx.fill();
+	}
+	if (layout.stroke) {
+		ctx.strokeStyle = 'rgba(0,0,0, 0.4)';
+		ctx.lineWidth = 1;
+		ctx.strokeRect(x, y, width-1, height-1);
 	}
 
 };
