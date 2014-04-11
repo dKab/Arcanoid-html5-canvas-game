@@ -53,11 +53,12 @@ Ball.prototype.draw = function() {
 			this.y + this.radius, this.radius);
 };
 Ball.prototype.move = function() {
-	var bricksLevel = this.game.bricks.rows * this.game.brickProportions.height;
+    
+	//var bricksLevel = this.game.bricks.rows * this.game.brickProportions.height;
 
 	this.x += this.xVelocity;
 	this.y += this.yVelocity;
-
+/*
 	if (this.y < bricksLevel && this.y > 0) {
 		var row = Math.floor(this.y / this.game.brickProportions.height), col = Math
 				.floor(this.center / this.game.brickProportions.width);
@@ -66,6 +67,7 @@ Ball.prototype.move = function() {
 			this.yVelocity = -this.yVelocity;
 		}
 	}
+        */
 	if (this.right >= this.game.canvas.width || this.x <= 0) {
 		this.xVelocity = -this.xVelocity;
 	}

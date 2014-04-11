@@ -11,12 +11,15 @@ function Game() {
 		width : 50
 	};
 	this.bate = new Bate(this);
-	this.ball = new Ball(this);
+        this.balls = [];
+	this.balls.push(new Ball(this));
 
 	this.bricks = new BricksCollection(this, {
 		rows : 5,
-		cols : 10,
+		cols : 10
 	}, this.brickProportions);
+        
+        this.collisionResolver = new CollisionResolver(this);
 }
 
 Game.prototype.start = function() {
@@ -53,7 +56,7 @@ Game.prototype.pause = function(gameover) {
 
 Game.prototype.drawAll = function() {
 	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-	this.ball.draw();
+	this.balls.forEach(Ball.prototype.draw);
 	this.bate.draw();
 	this.bricks.draw();
 };
@@ -61,6 +64,7 @@ Game.prototype.drawAll = function() {
 Game.prototype.updateAll = function() {
 	this.ball.update();
 	this.bate.update();
+        this.collisionResolver.watch(this.balls[0]);
 };
 
 Game.prototype.drawCircle = function(color, x, y, rad) {
@@ -83,7 +87,6 @@ Game.prototype.drawCircle = function(color, x, y, rad) {
 Game.prototype.drawRect = function(x, y, width, height, layout) {
 	var ctx = this.ctx;
 	ctx.fillStyle = layout.color;
-
 
 	if (!layout.rounded) {
 		ctx.fillRect(x, y, width, height);
@@ -114,7 +117,7 @@ Game.prototype.drawRect = function(x, y, width, height, layout) {
 	if (layout.stroke) {
 		ctx.strokeStyle = 'rgba(0,0,0, 0.4)';
 		ctx.lineWidth = 1;
-		ctx.strokeRect(x, y, width-1, height-1);
+		ctx.strokeRect(x, y, width - 1, height - 1);
 	}
 
 };
@@ -171,6 +174,18 @@ BricksCollection.prototype.remove = function(brick) {
 	}
 };
 
+BricksCollection.prototype.slice = function(obj) {
+	var exist = [];
+	for ( var i = obj.rows[0]; i <= obj.rows[1]; i++) {
+		for ( var k = obj.cols[0]; k <= obj.cols[1]; k++) {
+			var brick = this.bricks[i][k];
+			if (brick)
+				exist.push(brick);
+		}
+	}
+	return exist;
+};
+
 BricksCollection.prototype.__defineGetter__('rows', function() {
 	return this.bricks.length;
 });
@@ -180,3 +195,4 @@ BricksCollection.prototype.getBrick = function(row, col) {
 	return (brick) ? brick : null;
 
 };
+
