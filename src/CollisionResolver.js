@@ -44,7 +44,7 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
      return false;
      */
 
-    if (ball.bottom >= brick.y && ball.x <= brick.right && ball.right >= brick.x && ball.yVelocity >0 && !brick.above) {
+    if (ball.yVelocity >0 && !brick.above && !brick.isUpper() && ball.bottom >= brick.y && ball.x <= brick.right && ball.right >= brick.x ) {
         console.log('top');
         ball.yVelocity = -ball.yVelocity;
         //ball.y -= brick.y-ball.bottom;
@@ -53,7 +53,7 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
         brick.collide(ball);
         return true;
     }
-    if (ball.y <= brick.bottom && ball.bottom > brick.bottom && ball.x <= brick.right && ball.right >= brick.x && ball.yVelocity < 0 && !brick.below) {
+    if (ball.yVelocity < 0 && !brick.below && ball.y <= brick.bottom && ball.x <= brick.right && ball.right >= brick.x) {
         console.log('bot');
         ball.yVelocity = -ball.yVelocity;
         //ball.y = brick.bottom + (brick.bottom - ball.y);
@@ -61,7 +61,7 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
         brick.collide(ball);
         return true;
     }
-    if (ball.right >= brick.x && ball.y < brick.bottom && ball.xVelocity > 0 && !brick.prevInRow) {
+    if ( ball.xVelocity > 0 && !brick.prevInRow && !brick.isFirst() && ball.right >= brick.x) {
         console.log('left');
         ball.xVelocity = -ball.xVelocity;
         //ball.x = brick.x - (ball.right - brick.x)
@@ -70,7 +70,7 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
         return true;
     }
 
-    if (ball.x <= brick.right &&  ball.y < brick.bottom && ball.xVelocity < 0 && !brick.nextInRow) {
+    if (ball.xVelocity < 0 && !brick.nextInRow && !brick.isLast() && ball.x <= brick.right) {
         console.log('right');
         ball.xVelocity = -ball.xVelocity;
         //ball.x = brick.right + (brick.right - ball.right);

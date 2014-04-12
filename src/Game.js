@@ -237,6 +237,7 @@ BricksCollection.prototype.prevInRow = function(brick) {
     return this.bricks[row][prev];
 };
 
+
 BricksCollection.prototype.__defineGetter__('rows', function() {
     return this.bricks.length;
 });

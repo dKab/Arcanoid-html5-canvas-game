@@ -35,7 +35,7 @@ function Ball() {
 	this.xVelocity = 3;
 	this.power = 1;
 	this.unstoppable = false;
-	this.yVelocity = -3;
+	this.yVelocity = -6;
 	this.x = this.game.canvas.width / 2 - this.radius;
 	this.y = (this.game.canvas.height - this.game.bate.height - this.radius * 2);
         //console.log(this.x);
@@ -151,6 +151,18 @@ Brick.prototype.die = function() {
 	this.collection.remove(this);
 };
 
+Brick.prototype.isLast = function() {
+    return (this.col === this.collection.cols - 1);
+};
+
+Brick.prototype.isUpper = function() {
+    return (this.row === 0);
+};
+
+Brick.prototype.isFirst = function() {
+    return (this.col === 0);
+};
+
 Object.defineProperty(Brick.prototype, "above", {
 	get : function() {
 		return this.collection.above(this);
@@ -171,6 +183,9 @@ Object.defineProperty(Brick.prototype, "prevInRow", {
 		return this.collection.prevInRow(this);
 	}
 });
+
+
+
 
 Ball.prototype.constructor = Ball;
 Bate.prototype.constructor = Bate;
