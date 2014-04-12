@@ -35,10 +35,11 @@ function Ball() {
 	this.xVelocity = 3;
 	this.power = 1;
 	this.unstoppable = false;
-	this.yVelocity = -5;
+	this.yVelocity = -3;
 	this.x = this.game.canvas.width / 2 - this.radius;
 	this.y = (this.game.canvas.height - this.game.bate.height - this.radius * 2);
-
+        //console.log(this.x);
+        //console.log(this.y);
 	this.width = this.height = this.radius * 2;
 
 }
@@ -118,11 +119,13 @@ function Brick(gameObject, color, properties, collectionObject) {
 	this.color = color || 'gray';
 	this.hp = 1;
 	this.collection = collectionObject;
-	this.properties = properties;
+	//this.properties = properties;
+        this.row = properties.row;
+        this.col = properties.col;
 	this.width = properties.proportions.width;
 	this.height = properties.proportions.height;
-	this.x = properties.col * this.width;
-	this.y = properties.row * this.height;
+	this.x = this.col * this.width;
+	this.y = this.row * this.height;
 
 }
 Brick.prototype = Object.create(GameItem.prototype);
@@ -147,6 +150,27 @@ Brick.prototype.collide = function(ball) {
 Brick.prototype.die = function() {
 	this.collection.remove(this);
 };
+
+Object.defineProperty(Brick.prototype, "above", {
+	get : function() {
+		return this.collection.above(this);
+	}
+});
+Object.defineProperty(Brick.prototype, "below", {
+	get : function() {
+		return this.collection.below(this);
+	}
+});
+Object.defineProperty(Brick.prototype, "nextInRow", {
+	get : function() {
+		return this.collection.nextInRow(this);
+	}
+});
+Object.defineProperty(Brick.prototype, "prevInRow", {
+	get : function() {
+		return this.collection.prevInRow(this);
+	}
+});
 
 Ball.prototype.constructor = Ball;
 Bate.prototype.constructor = Bate;
