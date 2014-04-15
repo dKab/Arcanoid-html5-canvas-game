@@ -1,26 +1,51 @@
 function Game() {
-    this.fps = 60;
-    this.canvas = document.getElementById('game_field');
-    this.canvas.width = this.canvas.height = 500;
-    this.ctx = this.canvas.getContext('2d');
+    this.fps = 100;
+    //this.canvas = document.getElementById('game_field');
+    //this.canvas.width = this.canvas.height = 500;
+    var canvas = document.getElementById('game_field');
+    this.height = 500;
+    this.width = 512;
+    this.canvasUtil = new CanvasUtil(canvas);
+    //this.ctx = this.canvas.getContext('2d');
+    this.stage = 1;
+    this.totalScore = 0;
     this.inProgress = false;
-    this.isOver = true;
+    this.lastRender = 0;
     this.paused = false;
-    this.brickProportions = {
-        height: 30,
-        width: 50
-    };
-    this.bate = new Bate(this);
+
+    var bate = new Bate(this);
+    bate.placeAt(256 - bate.width / 2, 400);
+    this.bate = bate;
     this.balls = [];
-    this.balls.push(new Ball(this));
+    var ball = new Ball(this);
+    ball.placeAt(256 - ball.radius, 400 - ball.height);
+    this.balls.push(ball);
 
     this.bricks = new BricksCollection(this, {
         rows: 5,
-        cols: 10
+        cols: 8
     }, this.brickProportions);
 
     this.collisionResolver = new CollisionResolver(this);
+
+
 }
+
+Game.prototype.gameloop = function() {
+
+    var current = new Date().getTime(),
+            delta = current - this.lastRender;
+
+    if (delta >= this.delay) {
+        //console.log('hi');
+        this.updateAll();
+        this.drawAll();
+        this.lastRender = new Date().getTime();
+    }
+    //var game = this;
+    //console.log(this);
+    this.loop = requestAnimationFrame(Game.prototype.gameloop.bind(this));
+};
 
 Game.prototype.start = function() {
     var game = this;
@@ -28,34 +53,52 @@ Game.prototype.start = function() {
     this.isOver = false;
 
     document.addEventListener('mousemove', function(e) {
-        var offset = game.canvas.getBoundingClientRect().left;
+        var offset = game.canvasUtil.canvas.getBoundingClientRect().left;
+        //console.log(game);
+        //console.log(game.canvas);
+
         // var min = Math.min(((e.clientX-offset) - this.bate.width/2), 0);
         var x = (e.clientX - offset) - game.bate.width / 2;
         if (x < 0) {
             x = 0;
-        } else if (x + game.bate.width > game.canvas.width) {
-            x = game.canvas.width - game.bate.width;
+        } else if (x + game.bate.width > game.width) {
+            x = game.width - game.bate.width;
         }
         game.bate.x = x;
     });
+    /*
+     this.gameloop = setInterval(function() {
+     game.updateAll();
+     game.drawAll();
+     }, 1000 / this.fps);
+     */
+    this.gameloop();
 
-    this.gameloop = setInterval(function() {
-        game.updateAll();
-        game.drawAll();
-    }, 1000 / this.fps);
 };
+
+
+
+Object.defineProperty(Game.prototype, 'delay', {
+    get: function() {
+        return 1000 / this.fps;
+    }
+});
 
 Game.prototype.pause = function(gameover) {
     gameover = gameover || null;
-    clearInterval(this.gameloop);
+    //clearInterval(this.gameloop);
+    cancelAnimationFrame(this.loop);
+    console.log('paused');
     this.inProgress = false;
     this.isOver = !!(gameover);
     if (gameover)
         console.log(gameover);
+    this.loop = null;
 };
 
 Game.prototype.drawAll = function() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.canvasUtil.clear();
+    this.canvasUtil.fillBlack();
 
     for (var i = 0; i < this.balls.length; i++) {
         this.balls[i].draw();
@@ -73,72 +116,32 @@ Game.prototype.updateAll = function() {
     ;
     this.bate.update();
     this.collisionResolver.watch(this.balls[0]);
-};
+    var score = document.getElementById('score'),
+            stage = document.getElementById('stage');
 
-Game.prototype.drawCircle = function(color, x, y, rad) {
-    var ctx = this.ctx;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, rad, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    //console.log(x);
-    //console.log(y);
-
-    var grad = ctx.createRadialGradient((x - 3), (y - 3), 0, x, y, rad);
-    grad.addColorStop(0.150, 'rgba(255,255,255, 0.3)');
-    grad.addColorStop(0.2, 'rgba(0,0,0,0.0)');
-    grad.addColorStop(0.9, 'rgba(0,0,0,0.3)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.1)');
-    ctx.fillStyle = grad;
-    ctx.fill();
-};
-
-Game.prototype.drawRect = function(x, y, width, height, layout) {
-    var ctx = this.ctx;
-    ctx.fillStyle = layout.color;
-
-    if (!layout.rounded) {
-        ctx.fillRect(x, y, width, height);
-        var shadow = ctx.createLinearGradient(x, y, x, y + height);
-        shadow.addColorStop(0, 'rgba(0,0,0,0.3)');
-        shadow.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
-        shadow.addColorStop(1, 'rgba(0,0,0, 0.5)');
-        ctx.fillStyle = shadow;
-        ctx.fillRect(x, y, width, height);
-    } else {
-        // var shadow = ctx.createRadialGradient(x+width/2, y+height/2, )
-        ctx.beginPath();
-        var grad = ctx.createLinearGradient(x, y, x, y + height);
-        grad.addColorStop(0, 'rgba(0,0,0,0.3)');
-        grad.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
-        grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
-        ctx.fillStyle = layout.color;
-        ctx.arc(x + height / 2, y + height / 2, height / 2, Math.PI / 2,
-                Math.PI * 3 / 2);
-        ctx.lineTo(x + width - height / 2, y);
-        ctx.arc(x + width - height / 2, y + height / 2, height / 2,
-                Math.PI * 3 / 2, Math.PI / 2);
-        ctx.lineTo(x + height / 2, y + height);
-        ctx.fill();
-        ctx.fillStyle = grad;
-        ctx.fill();
-    }
-    if (layout.stroke) {
-        ctx.strokeStyle = 'rgba(0,0,0, 0.4)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, width - 1, height - 1);
-    }
+    score.innerHTML = this.totalScore;
+    stage.innerHTML = this.stage;
 
 };
 
-Game.prototype.drawRoundedRect = function() {
-    //
-};
 
-function BricksCollection(game, setup, brickProps) {
+function BricksCollection(game, setup) {
     var colors = ['blue', 'green', 'yellow', 'pink', 'orange', 'purple',
         'aqua'];
+
+    this.brickProportions = {
+        height: 32,
+        width: 64
+    };
+    this.scores = {
+        'aqua': 50,
+        'purple': 60,
+        'orange': 70,
+        'pink': 80,
+        'yellow': 90,
+        'green': 100,
+        'blue': 110
+    };
     this.game = game;
     this.bricks = [];
     this.cols = setup.cols;
@@ -149,7 +152,7 @@ function BricksCollection(game, setup, brickProps) {
             this.bricks[i][k] = new Brick(this.game, colors[i], {
                 row: i,
                 col: k,
-                proportions: brickProps
+                proportions: this.brickProportions
             }, this);
         }
     }
@@ -181,7 +184,7 @@ BricksCollection.prototype.remove = function(brick) {
     this.bricks[row][col] = null;
     this.length--;
     if (this.length === 0) {
-        this.game.stop();
+        this.game.pause();
     }
 };
 
@@ -224,16 +227,18 @@ BricksCollection.prototype.below = function(brick) {
 BricksCollection.prototype.nextInRow = function(brick) {
     var row = brick.row,
             col = brick.col;
-    var next = col+1;
-    if (next > this.cols-1) return null;
+    var next = col + 1;
+    if (next > this.cols - 1)
+        return null;
     return this.bricks[row][next];
 };
 
 BricksCollection.prototype.prevInRow = function(brick) {
     var row = brick.row,
             col = brick.col;
-    var prev = col- 1;
-    if (prev<0) return null;
+    var prev = col - 1;
+    if (prev < 0)
+        return null;
     return this.bricks[row][prev];
 };
 
@@ -243,7 +248,9 @@ BricksCollection.prototype.__defineGetter__('rows', function() {
 });
 BricksCollection.prototype.getBrick = function(row, col) {
     // console.log(row);
-    var brick = this.bricks[row][col];
+    if (this.bricks[row]) {
+        var brick = this.bricks[row][col];
+    }
     return (brick) ? brick : null;
 
 };

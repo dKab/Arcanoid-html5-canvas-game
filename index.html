@@ -11,26 +11,36 @@ and open the template in the editor.
 <meta name="viewport" content="width=device-width">
 <style type="text/css">
 #game_field {
-	width: 500px;
-	height: 500px;
 	border: 1px solid black;
+        border-top: 4px solid black;
+        border-left: 4px solid black;
+        cursor: none;
 }
+
 </style>
 
 <script type="text/javascript" src="src/Game.js"></script>
 <script type="text/javascript" src="src/Participants.js"></script>
 <script type="text/javascript" src="src/CollisionResolver.js"></script>
+<script type="text/javascript" src="src/CanvasUtil.js"></script>
 </head>
 <body>
-	<canvas id="game_field">
+	<canvas id="game_field" width="512" height="500">
             Your browser  doesn't support canvas!
-        </canvas>
+        </canvas><br>
+    score:<span id="score"></span><br>
+    level:<span id="stage"></span>
 	<script type="text/javascript">
 		var game = new Game();
 		game.drawAll();
 		window.addEventListener('click', function(e) {
 			if (!game.inProgress) {
 				if (game.isOver) {
+                                    game= null;
+                                    var canvas = document.getElementById('game_field');
+                                    var newCanv = canvas.cloneNode(true);
+                                    document.body.removeChild(canvas);
+                                    document.body.insertBefore(newCanv, document.getElementById('score'));
 					game = new Game();
 				}
 				game.start();
