@@ -1,15 +1,15 @@
 function CanvasUtil(canvas) {
-   this.canvas = canvas;
-   this.context = canvas.getContext('2d');
+    this.canvas = canvas;
+    this.context = canvas.getContext('2d');
 }
 
 CanvasUtil.prototype.drawBrick = function(brick) {
-    var tough = (brick instanceof ToughBrick);
+    var tough = (brick instanceof ToughBrick || brick instanceof UnbreakableBrick);
     var ctx = this.context;
     var x = brick.x,
-            y=brick.y,
-            height=brick.height,
-            width=brick.width;
+            y = brick.y,
+            height = brick.height,
+            width = brick.width;
     ctx.save();
     ctx.translate(brick.x, brick.y);
     ctx.fillStyle = brick.color;
@@ -91,7 +91,24 @@ CanvasUtil.prototype.clear = function() {
 
 CanvasUtil.prototype.fillBlack = function() {
     this.context.fillStyle = 'black';
-    this.context.fillRect(0,0,this.canvas.width,this.canvas.height);
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+};
+
+
+CanvasUtil.prototype.message = function(message) {
+    //this.clear();
+    //this.fillBlack();
+    var ctx = this.context;
+    //ctx.save();
+    //ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'blue';
+    //ctx.lineWidth = 4;
+    ctx.font = '24px Arial';
+    ctx.textAlign = 'center';
+    //ctx.stroke();
+    ctx.fillText(message, 250, this.canvas.height/2+100, 500);
+    //ctx.restore();
 };
 
 

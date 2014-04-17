@@ -28,21 +28,14 @@ and open the template in the editor.
 	<canvas id="game_field" width="512" height="500">
             Your browser  doesn't support canvas!
         </canvas><br>
-    score:<span id="score"></span><br>
-    level:<span id="stage"></span>
+    score: <span id="score">0</span><br>
+    level: <span id="level">1</span><br>
+    lives left: <span id="lives">3</span>
 	<script type="text/javascript">
 		var game = new Game();
 		game.drawAll();
 		window.addEventListener('click', function(e) {
-			if (!game.inProgress) {
-				if (game.isOver) {
-                                    game= null;
-                                    var canvas = document.getElementById('game_field');
-                                    var newCanv = canvas.cloneNode(true);
-                                    document.body.removeChild(canvas);
-                                    document.body.insertBefore(newCanv, document.getElementById('score'));
-					game = new Game();
-				}
+			if (game.paused) {
 				game.start();
 			} else
 				game.pause();

@@ -8,9 +8,9 @@ GameItem.prototype.update = function() {
     // /
 };
 
-GameItem.prototype.placeAt = function(x,y) {
-  this.x= x;
-  this.y = y;
+GameItem.prototype.placeAt = function(x, y) {
+    this.x = x;
+    this.y = y;
 };
 
 Object.defineProperty(GameItem.prototype, "bottom", {
@@ -37,7 +37,7 @@ function Ball() {
     GameItem.apply(this, arguments);
     this.color = 'red';
     this.radius = 7;
-    this.xVelocity = 4;
+    this.xVelocity = 3;
     this.power = 1;
     this.unstoppable = false;
     this.yVelocity = -7;
@@ -91,18 +91,23 @@ Ball.prototype.move = function() {
      }
      */
     if (this.y >= this.game.height) {
-        this.game.pause('game over');
+        //this.game.over();
         this.die();
     }
 
 };
 
 Ball.prototype.die = function() {
-    this.game.balls.forEach(function(val,index) {
+    this.game.balls.forEach(function(val, index) {
         if (val === this) {
-            this.game.balls.splice(index,1);
+            this.game.balls.splice(index, 1);
         }
-    });
+    }, this);
+
+    if (this.game.balls.length === 0) {
+        this.game.decrementLives();
+    }
+
 };
 
 function Bate() {
@@ -110,8 +115,8 @@ function Bate() {
     this.color = '#99CC00';
     this.width = 100;
     this.height = 20;
-   // this.x = this.game.canvas.width / 2 - this.width / 2;
-  //  this.y = this.game.canvas.height - this.height;
+    // this.x = this.game.canvas.width / 2 - this.width / 2;
+    //  this.y = this.game.canvas.height - this.height;
 
 }
 Bate.prototype = Object.create(GameItem.prototype);
@@ -134,11 +139,12 @@ function Brick(gameObject, color, properties, collectionObject) {
     this.color = color || 'gray';
     this.hp = 1;
     this.collection = collectionObject;
-    var score = this.collection.scores[this.color];
-    if (score !== undefined) {
-        this.score = score;
-    }
-
+    /*
+     var score = this.collection.scores[this.color];
+     if (score !== undefined) {
+     this.score = score;
+     }
+     */
     //this.properties = properties;
     this.row = properties.row;
     this.col = properties.col;
@@ -149,6 +155,13 @@ function Brick(gameObject, color, properties, collectionObject) {
 
 }
 Brick.prototype = Object.create(GameItem.prototype);
+
+Object.defineProperty(Brick.prototype, 'score', {
+    get: function() {
+
+        return (this instanceof ToughBrick) ? this.game.stage * 50 : this.collection.scores[this.color];
+    }
+});
 
 Brick.prototype.draw = function() {
     var color = this.color;
@@ -232,5 +245,9 @@ function UnbreakableBrick() {
     this.color = "#CC9900";
     this.unbreakable = true;
 }
+
+UnbreakableBrick.prototype = Object.create(Brick.prototype);
+
+UnbreakableBrick.prototype.constructor = UnbreakableBrick;
 
 

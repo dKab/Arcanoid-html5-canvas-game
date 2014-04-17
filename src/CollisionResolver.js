@@ -10,14 +10,15 @@ CollisionResolver.prototype.conduct = function(ball) {
     var rowTop = Math.floor(ball.y / height), rowBot = Math.floor(ball.bottom / height),
             colLeft = Math.floor(ball.x / width),
             colRight = Math.floor(ball.right / width);
-
+/*
     var col = Math.floor(ball.center / width);
     var row = Math.floor(ball.y / height);
     var brick = bricks.getBrick(row, col);
     if (brick) {
         this.detectBrickCollision(ball, brick);
     }
-    /*
+    */
+    
      var suspects = bricks.slice({
      rows: [rowTop, rowBot],
      cols: [colLeft, colRight]
@@ -33,7 +34,7 @@ CollisionResolver.prototype.conduct = function(ball) {
      && i < suspects.length) {
      i++;
      }
-     */
+     
 
 };
 
@@ -92,6 +93,7 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
 };
 
 CollisionResolver.prototype.watch = function(ball) {
+    if (!ball) return;
     var bricksLevel = this.game.bricks.rows * this.game.bricks.brickProportions.height,
             bate = this.game.bate;
     if (ball.y <= bricksLevel) {
