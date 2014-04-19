@@ -47,7 +47,7 @@ function Ball() {
     this.xVelocity = 2;
     this.power = 1;
     this.unstoppable = false;
-    this.yVelocity = -5;
+    this.yVelocity = -7;
     //this.x = this.game.canvas.width / 2 - this.radius;
     //this.y = (this.game.canvas.height - this.game.bate.height - this.radius * 2);
     //console.log(this.x);
@@ -82,11 +82,18 @@ Ball.prototype.move = function() {
      }
      */
     //console.log(Math.atan2(this.yVelocity, this.xVelocity) * 180/Math.PI);
-    if (this.right >= this.game.width || this.x <= 0) {
-        this.xVelocity = -this.xVelocity;
-    }
     if (this.y <= 0) {
         this.yVelocity = -this.yVelocity;
+    }
+    
+    
+    if (this.right >= this.game.width) {
+        this.xVelocity = -this.xVelocity;
+        this.x = this.game.width - (this.width+1);
+    }
+    if (this.x<= 0) {
+        this.xVelocity = -this.xVelocity;
+        this.x = 1;
     }
     /*
      if ((this.bottom >= this.game.bate.y) && (this.center > this.game.bate.x)
