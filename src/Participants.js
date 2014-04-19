@@ -27,8 +27,15 @@ Object.defineProperty(GameItem.prototype, "right", {
 
 Object.defineProperty(GameItem.prototype, "center", {
     get: function() {
-        var half = (this.radius) ? this.radius : this.width / 2;
-        return this.x + half;
+        var halfWidth = (this.radius) ? this.radius : this.width / 2,
+      halfHeight = (this.radius) ? this.radius : this.height/2;
+        var cX= this.x+halfWidth,
+                cY = this.y+halfHeight;
+        var center = {
+            'x': cX,
+            'y': cY
+        };
+        return center;
     }
 });
 
@@ -37,10 +44,10 @@ function Ball() {
     GameItem.apply(this, arguments);
     this.color = 'red';
     this.radius = 7;
-    this.xVelocity = 3;
+    this.xVelocity = 2;
     this.power = 1;
     this.unstoppable = false;
-    this.yVelocity = -7;
+    this.yVelocity = -5;
     //this.x = this.game.canvas.width / 2 - this.radius;
     //this.y = (this.game.canvas.height - this.game.bate.height - this.radius * 2);
     //console.log(this.x);
@@ -109,6 +116,8 @@ Ball.prototype.die = function() {
     }
 
 };
+
+//Object.defineProperty(Ball.prototype, '')
 
 function Bate() {
     GameItem.apply(this, arguments);

@@ -314,7 +314,7 @@ BricksCollection.prototype.remove = function(brick) {
 };
 BricksCollection.prototype.slice = function(obj) {
     var exist = [];
-    for (var i = obj.rows[0]; i < Math.min(obj.rows[1], this.bricks.length); i++) {
+    for (var i = obj.rows[0]; i <= Math.min(obj.rows[1], this.bricks.length); i++) {
         for (var k = obj.cols[0]; k <= obj.cols[1]; k++) {
             if (Array.isArray(this.bricks[i])) {
                 var brick = this.bricks[i][k];
