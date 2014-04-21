@@ -45,7 +45,7 @@ CanvasUtil.prototype.drawBrick = function(brick) {
         var stripWidth = Math.round(brick.width / 2.5);
         //var now = new Date().getTime(),
         //  phase = (now - brick.startedBlinking)/500;
-        if (brick.currX - 2 * stripWidth > width) {
+        if (brick.currX - 2 * stripWidth > width-4) {
             brick.stopBlinking();
         } else {
             brick.currX += 5;
@@ -67,7 +67,7 @@ CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, 
     var ctx = this.context,
             brickX = brick.x,
             brickY = brick.y,
-            width = brick.width,
+            width = brick.width-4,
             height = brick.height-4;
 
     ctx.save();
@@ -105,7 +105,7 @@ CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, 
 CanvasUtil.prototype.calcDest = function(brick) {
     var x = brick.currX,
             y = brick.currY,
-            width = brick.width,
+            width = brick.width-4,
             height = brick.height-4;
 
     var fromX = x,
