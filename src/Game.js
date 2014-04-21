@@ -12,6 +12,8 @@ function Game() {
     this.totalScore = 0;
     this.paused = true;
     this.lastRender = 0;
+    
+    this.prizeTypes = ['WeaponPrize', 'SlowDownPrize', 'ExtraLifePrize', 'ExpandPrize'];
 
     var bate = new Bate(this);
     //bate.placeAt(256 - bate.width / 2, 450);
@@ -364,6 +366,12 @@ BricksCollection.prototype.prevInRow = function(brick) {
 Object.defineProperty(BricksCollection.prototype, 'rows', {
     get: function() {
         return this.bricks.length;
+    }
+});
+
+Object.defineProperty(BricksCollection.prototype, 'cols', {
+    get: function() {
+        return this.bricks[0].length;
     }
 });
 

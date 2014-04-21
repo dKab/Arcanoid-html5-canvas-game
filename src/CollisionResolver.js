@@ -92,22 +92,22 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
          case "top":
              ball.y = brick.y-ball.height;
              ball.yVelocity = - ball.yVelocity;
-             console.log('top');
+             console.log('top'+"("+brick.row+"," + brick.col+")");
              break;
          case 'bottom':
              ball.y=brick.bottom;
              ball.yVelocity = -ball.yVelocity;
-             console.log('bot');
+             console.log('bot'+"("+brick.row+"," + brick.col+")");
              break;
          case 'left':
              ball.x = brick.x-ball.width;
              ball.xVelocity = - ball.xVelocity;
-             console.log('left');
+             console.log('left'+"("+brick.row+"," + brick.col+")");
              break;
          case 'right':
              ball.x = brick.right;
              ball.xVelocity = -ball.xVelocity;
-             console.log('right');
+             console.log('right'+"("+brick.row+"," + brick.col+")");
              break;
      }
      brick.collide(ball);
@@ -132,9 +132,9 @@ CollisionResolver.prototype.intersects = function(ball, brick) {
     if (d < ball.radius) {
         //determin which side of rectangle collided
         var side;
-        if (ball.xVelocity > 0 && !brick.prevInRow && ball.right >= brick.x && ball.center.y <=brick.bottom && ball.center.y >= brick.y)
+        if (ball.xVelocity > 0 && !brick.prevInRow && !brick.isFirst() && ball.right >= brick.x && ball.center.y <=brick.bottom && ball.center.y >= brick.y)
             side = "left";
-        else if (ball.xVelocity < 0 && !brick.nextInRow &&  ball.x <= brick.right && ball.center.y <=brick.bottom && ball.center.y >= brick.y)
+        else if (ball.xVelocity < 0 && !brick.nextInRow && !brick.isLast() &&  ball.x <= brick.right && ball.center.y <=brick.bottom && ball.center.y >= brick.y)
             side = 'right';
         else if (ball.yVelocity > 0 && !brick.above && !brick.isUpper() && ball.bottom >= brick.y && ball.center.x >=brick.x && ball.center.x <=brick.right)
             side = 'top';

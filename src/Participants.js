@@ -129,7 +129,7 @@ Ball.prototype.die = function() {
 function Bate() {
     GameItem.apply(this, arguments);
     this.color = '#99CC00';
-    this.width = 100;
+    this.width = 70;
     this.height = 20;
     // this.x = this.game.canvas.width / 2 - this.width / 2;
     //  this.y = this.game.canvas.height - this.height;

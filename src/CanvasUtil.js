@@ -150,7 +150,7 @@ CanvasUtil.prototype.drawCircle = function(color, x, y, rad) {
     ctx.fill();
 };
 
-CanvasUtil.prototype.drawBate = function(bate) {
+CanvasUtil.prototype.drawPrize = function(bate) {
     var ctx = this.context;
     //ctx.fillStyle = bate.color;
     ctx.beginPath();
@@ -169,6 +169,85 @@ CanvasUtil.prototype.drawBate = function(bate) {
     ctx.fillStyle = grad;
     ctx.fill();
 
+};
+
+CanvasUtil.prototype.drawBate = function(bate) {
+    var ctx = this.context;
+    var width = bate.width,
+            height= bate.height,
+            x=bate.x,
+            y=bate.y;
+    	ctx.save();
+	ctx.translate(x, y);
+	ctx.beginPath();
+	var grad = ctx.createLinearGradient(0, 0, 0, height);
+	grad.addColorStop(0, 'rgba(0,0,0,0.4)');
+	grad.addColorStop(0.3, 'rgba(0,0,0, 0.0)');
+	grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
+
+	ctx.beginPath();
+	ctx.moveTo(width / 4, 0);
+	ctx.lineTo(width / 4, height);
+	ctx.lineTo(width * 3 / 4, height);
+	ctx.lineTo(width * 3 / 4, 0);
+	ctx.closePath();
+	ctx.fillStyle = 'lightgray';
+	ctx.fill();
+	ctx.fillStyle = grad;
+	ctx.fill();
+
+
+
+	ctx.beginPath();
+	ctx.arc(height / 2, height / 2, height / 2, Math.PI / 2,
+	Math.PI * 3 / 2);
+	ctx.lineTo(width / 4, 0);
+	ctx.lineTo(width / 4, height);
+	ctx.closePath();
+	ctx.fillStyle = 'orangered';
+	ctx.fill();
+	ctx.fillStyle = grad;
+	ctx.fill();
+
+	ctx.beginPath();
+	ctx.moveTo(width / 4, 0);
+	ctx.lineTo(width / 4, height);
+	ctx.lineWidth = 2;
+	ctx.stroke();
+
+	ctx.beginPath();
+	ctx.arc(height / 2, height / 2, height / 2, Math.PI * 2 / 3, Math.PI * 4 / 3);
+	ctx.closePath();
+	ctx.fillStyle = 'aqua';
+	ctx.fill();
+	ctx.fillStyle = grad;
+	ctx.fill();
+
+
+	ctx.beginPath();
+	ctx.arc(width - height / 2, height / 2, height / 2, Math.PI * 3 / 2, Math.PI / 2);
+	ctx.lineTo(width * 3 / 4, height);
+	ctx.lineTo(width * 3 / 4, 0);
+	ctx.closePath();
+	ctx.fillStyle = 'orangered';
+	ctx.fill();
+	ctx.fillStyle = grad;
+	ctx.fill();
+
+	ctx.beginPath();
+	ctx.moveTo(width * 3 / 4, 0);
+	ctx.lineTo(width * 3 / 4, height);
+	ctx.lineWidth = 2.5;
+	ctx.stroke();
+
+	ctx.beginPath();
+	ctx.arc(width - height / 2, height / 2, height / 2, -Math.PI / 3, Math.PI / 3);
+	ctx.closePath();
+	ctx.fillStyle = 'aquamarine';
+	ctx.fill();
+	ctx.fillStyle = grad;
+	ctx.fill();
+	ctx.restore();
 };
 
 CanvasUtil.prototype.clear = function() {
