@@ -92,22 +92,22 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
          case "top":
              ball.y = brick.y-ball.height;
              ball.yVelocity = - ball.yVelocity;
-             //console.log('top');
+             console.log('top');
              break;
          case 'bottom':
              ball.y=brick.bottom;
              ball.yVelocity = -ball.yVelocity;
-             //console.log('bot');
+             console.log('bot');
              break;
          case 'left':
              ball.x = brick.x-ball.width;
              ball.xVelocity = - ball.xVelocity;
-             //console.log('left');
+             console.log('left');
              break;
          case 'right':
              ball.x = brick.right;
              ball.xVelocity = -ball.xVelocity;
-             //console.log('right');
+             console.log('right');
              break;
      }
      brick.collide(ball);
@@ -138,7 +138,7 @@ CollisionResolver.prototype.intersects = function(ball, brick) {
             side = 'right';
         else if (ball.yVelocity > 0 && !brick.above && !brick.isUpper() && ball.bottom >= brick.y && ball.center.x >=brick.x && ball.center.x <=brick.right)
             side = 'top';
-        else if (ball.yVelocity < 0 && !brick.below && ball.y <= brick.bottom)
+        else if (ball.yVelocity < 0 && !brick.below && ball.y <= brick.bottom && ball.center.x >=brick.x && ball.center.x <=brick.right)
             side = 'bottom';
         return side;
     }

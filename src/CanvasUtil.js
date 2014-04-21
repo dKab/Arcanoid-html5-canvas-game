@@ -39,8 +39,94 @@ CanvasUtil.prototype.drawBrick = function(brick) {
     ctx.lineTo(0, height - 2);
     ctx.strokeStyle = "black";
     ctx.stroke();
-
     ctx.restore();
+
+    if (brick.isBlinking) {
+        var stripWidth = Math.round(brick.width / 2.5);
+        //var now = new Date().getTime(),
+        //  phase = (now - brick.startedBlinking)/500;
+        if (brick.currX - 2 * stripWidth > width) {
+            brick.stopBlinking();
+        } else {
+            brick.currX += 5;
+            brick.currY += 5;
+
+            var toX = this.calcDest(brick).toX,
+                    toY = this.calcDest(brick).toY,
+                    fromX = this.calcDest(brick).fromX,
+                    fromY = this.calcDest(brick).fromY;
+            this.drawStrip(brick, stripWidth, fromX, toX, fromY, toY);
+        }
+
+    }
+
+};
+
+
+CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, toY) {
+    var ctx = this.context,
+            brickX = brick.x,
+            brickY = brick.y,
+            width = brick.width,
+            height = brick.height-4;
+
+    ctx.save();
+    ctx.translate(brickX, brickY);
+    ctx.beginPath();
+    if (toX >= width) {
+        ctx.moveTo(width, height);
+    } else {
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+    }
+    if (toX == 0) {
+        ctx.lineTo(Math.max(toX - stripWidth, 0), Math.max(toY - stripWidth, 0));
+    } else if (toX - stripWidth < 0) {
+        ctx.lineTo(0, height);
+        ctx.lineTo(0, height - (stripWidth - toX));
+    } else {
+        ctx.lineTo(Math.max(toX - stripWidth, 0), toY);
+    }
+    if (fromX == width && fromY < stripWidth) {
+        ctx.lineTo(width - (stripWidth - fromY), 0);
+        ctx.lineTo(width, 0);
+    } else if (fromX == width && fromY >= stripWidth) {
+        ctx.lineTo(fromX, fromY - stripWidth);
+    } else {
+        ctx.lineTo(Math.max(fromX - stripWidth, 0), fromY);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fill();
+    console.log('1');
+    ctx.restore();
+};
+
+CanvasUtil.prototype.calcDest = function(brick) {
+    var x = brick.currX,
+            y = brick.currY,
+            width = brick.width,
+            height = brick.height-4;
+
+    var fromX = x,
+            fromY = 0;
+    if (fromX > width) {
+        fromX = width;
+        fromY = x - width;
+    }
+
+    var toX = 0;
+    var toY = y;
+    if (y > height) {
+        toX = y - height;
+        toY = height;
+    }
+    return {
+        fromX: fromX,
+        toX: toX,
+        fromY: fromY,
+        toY: toY
+    };
 
 };
 
@@ -107,7 +193,7 @@ CanvasUtil.prototype.message = function(message) {
     ctx.font = '24px Arial';
     ctx.textAlign = 'center';
     //ctx.stroke();
-    ctx.fillText(message, 250, this.canvas.height/2+100, 500);
+    ctx.fillText(message, 250, this.canvas.height / 2 + 100, 500);
     //ctx.restore();
 };
 

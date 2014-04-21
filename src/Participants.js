@@ -185,17 +185,36 @@ Brick.prototype.draw = function() {
 };
 Brick.prototype.collide = function(ball) {
     if (this.unbreakable) {
+        this.startBlinking();
         return;
     }
     this.hp -= ball.power;
     if (this.hp <= 0) {
         this.die();
+    } else {
+        this.startBlinking();
     }
-
 };
 Brick.prototype.die = function() {
-    this.collection.remove(this);
     this.game.totalScore += this.score;
+    this.collection.remove(this);
+ 
+};
+
+Brick.prototype.startBlinking = function() {
+    if (this.isBlinking) {
+        return;
+    }
+    this.isBlinking = true;
+    this.currX = 0;
+    this.currY=0;
+    //this.startedBlinking = new Date().getTime();
+  //this.game.CanvasUtil.blink(this);  
+};
+
+Brick.prototype.stopBlinking = function() {
+  this.isBlinking = false;
+  //delete this.startedBlinking;
 };
 
 Brick.prototype.isLast = function() {

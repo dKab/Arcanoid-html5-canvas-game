@@ -68,6 +68,7 @@ Game.prototype.gameloop = function() {
 };
 
 Game.prototype.win = function() {
+    this.drawAll();
     this.canvasUtil.message('Congrats! You win! \n Your score: ' + this.totalScore);
 };
 
