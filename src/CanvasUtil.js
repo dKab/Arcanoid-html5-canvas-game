@@ -98,7 +98,7 @@ CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, 
     ctx.closePath();
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fill();
-    console.log('1');
+    //console.log('1');
     ctx.restore();
 };
 
@@ -150,25 +150,36 @@ CanvasUtil.prototype.drawCircle = function(color, x, y, rad) {
     ctx.fill();
 };
 
-CanvasUtil.prototype.drawPrize = function(bate) {
+CanvasUtil.prototype.drawPrize = function(prize) {
     var ctx = this.context;
+    var x= prize.x,
+            y=prize.y,
+            width= prize.width,
+            height=prize.height,
+            color=prize.color;
     //ctx.fillStyle = bate.color;
+    ctx.save();
+    ctx.translate(x,y);
     ctx.beginPath();
-    var grad = ctx.createLinearGradient(bate.x, bate.y, bate.x, bate.y + bate.height);
+    var grad = ctx.createLinearGradient(0, 0, 0, height);
     grad.addColorStop(0, 'rgba(0,0,0,0.3)');
     grad.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
     grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
-    ctx.fillStyle = bate.color;
-    ctx.arc(bate.x + bate.height / 2, bate.y + bate.height / 2, bate.height / 2, Math.PI / 2,
+    ctx.fillStyle = color;
+    ctx.arc(height / 2, height / 2, height / 2, Math.PI / 2,
             Math.PI * 3 / 2);
-    ctx.lineTo(bate.x + bate.width - bate.height / 2, bate.y);
-    ctx.arc(bate.x + bate.width - bate.height / 2, bate.y + bate.height / 2, bate.height / 2,
+    ctx.lineTo(width - height / 2, 0);
+    ctx.arc(width - height / 2, height / 2, height / 2,
             Math.PI * 3 / 2, Math.PI / 2);
-    ctx.lineTo(bate.x + bate.height / 2, bate.y + bate.height);
+    ctx.lineTo(height / 2, height);
     ctx.fill();
     ctx.fillStyle = grad;
     ctx.fill();
-
+    ctx.strokeStyle='rgba(0,0,0,0.9)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    
+    ctx.restore();
 };
 
 CanvasUtil.prototype.drawBate = function(bate) {
@@ -243,7 +254,7 @@ CanvasUtil.prototype.drawBate = function(bate) {
 	ctx.beginPath();
 	ctx.arc(width - height / 2, height / 2, height / 2, -Math.PI / 3, Math.PI / 3);
 	ctx.closePath();
-	ctx.fillStyle = 'aquamarine';
+	ctx.fillStyle = 'aqua';
 	ctx.fill();
 	ctx.fillStyle = grad;
 	ctx.fill();

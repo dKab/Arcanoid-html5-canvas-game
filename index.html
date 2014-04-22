@@ -35,12 +35,15 @@ and open the template in the editor.
 	<script type="text/javascript">
 		var game = new Game();
 		game.drawAll();
-		window.addEventListener('click', function(e) {
-			if (game.paused) {
+                
+                function pauseToggle() {
+                    if (game.paused) {
 				game.start();
 			} else
 				game.pause();
-		});
+		}
+                
+		window.addEventListener('click', pauseToggle);
 	</script>
 </body>
 </html>

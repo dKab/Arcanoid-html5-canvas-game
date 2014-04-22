@@ -28,9 +28,9 @@ Object.defineProperty(GameItem.prototype, "right", {
 Object.defineProperty(GameItem.prototype, "center", {
     get: function() {
         var halfWidth = (this.radius) ? this.radius : this.width / 2,
-      halfHeight = (this.radius) ? this.radius : this.height/2;
-        var cX= this.x+halfWidth,
-                cY = this.y+halfHeight;
+                halfHeight = (this.radius) ? this.radius : this.height / 2;
+        var cX = this.x + halfWidth,
+                cY = this.y + halfHeight;
         var center = {
             'x': cX,
             'y': cY
@@ -42,12 +42,17 @@ Object.defineProperty(GameItem.prototype, "center", {
 // Ball - subclass
 function Ball() {
     GameItem.apply(this, arguments);
+    this.normalSpeed= {
+        x: 2,
+        y: -7 
+    };
     this.color = 'red';
     this.radius = 7;
-    this.xVelocity = 2;
+    this.speedToNormal();
+    //this.xVelocity = this.normalSpeed.x;
     this.power = 1;
     this.unstoppable = false;
-    this.yVelocity = -7;
+    //this.yVelocity = this.normalSpeed.y;
     //this.x = this.game.canvas.width / 2 - this.radius;
     //this.y = (this.game.canvas.height - this.game.bate.height - this.radius * 2);
     //console.log(this.x);
@@ -85,13 +90,13 @@ Ball.prototype.move = function() {
     if (this.y <= 0) {
         this.yVelocity = -this.yVelocity;
     }
-    
-    
+
+
     if (this.right >= this.game.width) {
         this.xVelocity = -this.xVelocity;
-        this.x = this.game.width - (this.width+1);
+        this.x = this.game.width - (this.width + 1);
     }
-    if (this.x<= 0) {
+    if (this.x <= 0) {
         this.xVelocity = -this.xVelocity;
         this.x = 1;
     }
@@ -109,6 +114,11 @@ Ball.prototype.move = function() {
         this.die();
     }
 
+};
+
+Ball.prototype.speedToNormal = function() {
+    this.xVelocity = this.normalSpeed.x;
+    this.yVelocity = this.normalSpeed.y;
 };
 
 Ball.prototype.die = function() {
@@ -131,11 +141,14 @@ function Bate() {
     this.color = '#99CC00';
     this.width = 70;
     this.height = 20;
+    this.normalWidth = 70;
     // this.x = this.game.canvas.width / 2 - this.width / 2;
     //  this.y = this.game.canvas.height - this.height;
 
 }
 Bate.prototype = Object.create(GameItem.prototype);
+
+
 
 
 
@@ -147,7 +160,22 @@ Bate.prototype.collide = function(ball) {
     ball.yVelocity = -ball.yVelocity;
 };
 Bate.prototype.update = function() {
-    //
+    if (this.finalWidth && this.width < this.finalWidth) {
+        this.width++;
+        if (this.width % 2 !== 0) {
+            this.x--;
+        }
+    } else {
+        delete this.finalWidth;
+    }
+};
+
+Bate.prototype.extend = function() {
+    this.finalWidth = this.width * 2;
+};
+
+Bate.prototype.toNormalWidth = function() {
+  this.width = this.normalWidth;
 };
 
 function Brick(gameObject, color, properties, collectionObject) {
@@ -195,10 +223,28 @@ Brick.prototype.collide = function(ball) {
         this.startBlinking();
     }
 };
+
+Brick.prototype.randomizePrize = function() {
+    var length = this.game.prizePossibility.length;
+    console.log(length);
+    var rand = Math.floor(Math.random()*(length-0.0001));
+       console.log(rand);
+    return this.game.prizePossibility[rand];
+ 
+};
+
 Brick.prototype.die = function() {
     this.game.totalScore += this.score;
+    var lucky = this.randomizePrize();
+            //console.log(lucky);
+    if (lucky) {
+        var prize = this.game.randomPrize();
+
+        console.log(prize);
+        prize.placeAt(this.center.x-prize.width/2, this.center.y-prize.height/2);
+    }
     this.collection.remove(this);
- 
+
 };
 
 Brick.prototype.startBlinking = function() {
@@ -207,14 +253,14 @@ Brick.prototype.startBlinking = function() {
     }
     this.isBlinking = true;
     this.currX = 0;
-    this.currY=0;
+    this.currY = 0;
     //this.startedBlinking = new Date().getTime();
-  //this.game.CanvasUtil.blink(this);  
+    //this.game.CanvasUtil.blink(this);  
 };
 
 Brick.prototype.stopBlinking = function() {
-  this.isBlinking = false;
-  //delete this.startedBlinking;
+    this.isBlinking = false;
+    //delete this.startedBlinking;
 };
 
 Brick.prototype.isLast = function() {

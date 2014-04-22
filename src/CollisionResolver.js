@@ -163,7 +163,7 @@ CollisionResolver.prototype.watch = function(ball) {
             bate = this.game.bate;
     if (ball.y <= bricksLevel) {
         this.conduct(ball);
-    } else if (ball.bottom >= bate.y) {
+    } else if (ball.bottom >= bate.y && ball.y<=bate.center.y && ball.yVelocity > 0) {
         this.handleBateCollision(ball, bate);
     }
 };
