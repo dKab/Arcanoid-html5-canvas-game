@@ -13,12 +13,14 @@ function Game() {
     this.paused = true;
     this.lastRender = 0;
     
-    this.prizeTypes = ['ExtendPrize'];
+    this.currentListener = null;
+    
+    this.prizeTypes = ['ExtendPrize', 'GluePrize', 'SlowPrize'];
     this.prizePossibility = [0,0,0,1];
     
     this.prizes = new PrizeCollection();
     
-    this.activeFeature = null;
+    this.activePowerup = null;
     
 
     var bate = new Bate(this);
@@ -78,13 +80,14 @@ Game.prototype.gameloop = function() {
 
 Game.prototype.restore = function() {
   
-  return this.activeFeature && this.activeFeature.prototype.deactivate.call(this);  
+  return this.activePowerup && this.activePowerup.prototype.deactivate.call(this);  
 };
 
 Game.prototype.randomPrize = function() {
   var int = Math.floor(Math.random()*(this.prizeTypes.length-0.0001)),
                 type=this.prizeTypes[int];
-        console.log(type);
+        console.log(int);
+        console.log('type: '+type);
         var prize = new window[type](this, this.prizes);
         this.prizes.add(prize);
         return prize;
@@ -93,13 +96,13 @@ Game.prototype.randomPrize = function() {
 Game.prototype.win = function() {
     this.drawAll();
     this.canvasUtil.message('Congrats! You win! \n Your score: ' + this.totalScore);
-    window.removeEventListener('click', pauseToggle);
+    window.removeEventListener('keypress', pauseToggle);
 };
 
 Game.prototype.over = function() {
     this.pause();
     this.canvasUtil.message('Game over! \n Your score: ' + this.totalScore);
-    window.removeEventListener('click', pauseToggle);
+    window.removeEventListener('keypress', pauseToggle);
 };
 
 Game.prototype.renderLevel = function() {

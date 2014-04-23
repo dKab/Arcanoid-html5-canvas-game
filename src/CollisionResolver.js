@@ -92,22 +92,22 @@ CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
          case "top":
              ball.y = brick.y-ball.height;
              ball.yVelocity = - ball.yVelocity;
-             console.log('top'+"("+brick.row+"," + brick.col+")");
+             //console.log('top'+"("+brick.row+"," + brick.col+")");
              break;
          case 'bottom':
              ball.y=brick.bottom;
              ball.yVelocity = -ball.yVelocity;
-             console.log('bot'+"("+brick.row+"," + brick.col+")");
+             //console.log('bot'+"("+brick.row+"," + brick.col+")");
              break;
          case 'left':
              ball.x = brick.x-ball.width;
              ball.xVelocity = - ball.xVelocity;
-             console.log('left'+"("+brick.row+"," + brick.col+")");
+             //console.log('left'+"("+brick.row+"," + brick.col+")");
              break;
          case 'right':
              ball.x = brick.right;
              ball.xVelocity = -ball.xVelocity;
-             console.log('right'+"("+brick.row+"," + brick.col+")");
+             //console.log('right'+"("+brick.row+"," + brick.col+")");
              break;
      }
      brick.collide(ball);
@@ -171,9 +171,20 @@ CollisionResolver.prototype.watch = function(ball) {
 CollisionResolver.prototype.reflectAtAngle = function(ball, deg) {
     var rad = deg / 180 * Math.PI;
     v = Math.sqrt(Math.pow(ball.xVelocity, 2) + Math.pow(ball.yVelocity, 2));
-    ball.yVelocity = -Math.abs(v * Math.sin(rad));
+    
+    var dy = -Math.abs(v * Math.sin(rad)),
+            dx = v * Math.cos(rad);
+    
+
+    
+    //ball.yVelocity = -Math.abs(v * Math.sin(rad));
     ball.y = this.game.bate.y - ball.height;
-    ball.xVelocity = v * Math.cos(rad);
+    
+        return {
+        x: dx,
+        y: dy
+    };
+    //ball.xVelocity = v * Math.cos(rad);
 };
 
 CollisionResolver.prototype.handleBateCollision = function(ball, bate) {
@@ -185,24 +196,49 @@ CollisionResolver.prototype.handleBateCollision = function(ball, bate) {
         if (offset < i * bate.width / 5)
             break;
     }
+    
+    var  speed,
+            potentialY,
+            potentialX;
+    
     switch (i) {
         case 1:
-            this.reflectAtAngle(ball, 150);
+            speed=this.reflectAtAngle(ball, 150);
             break;
         case 2:
-            this.reflectAtAngle(ball, 120);
+            speed=this.reflectAtAngle(ball, 120);
             break;
         case 3:
-            ball.yVelocity = -ball.yVelocity;
+            ball.y = this.game.bate.y - ball.height;
+            speed= {
+                x: ball.xVelocity,
+                y: -ball.yVelocity
+            };
             break;
         case 4:
-            this.reflectAtAngle(ball, 60);
+            speed=this.reflectAtAngle(ball, 60);
             break;
         case 5:
-            this.reflectAtAngle(ball, 30);
+            speed=this.reflectAtAngle(ball, 30);
             break;
         default:
             return;
+    }
+    
+    potentialX = speed.x;
+    potentialY = speed.y;
+    
+    if (bate instanceof StickyBate) {
+        ball.yVelocity = ball.xVelocity = 0;
+        ball.glued = offset;
+        bate.loaded = {
+            'ball': ball,
+            'launchSpeed': speed
+        };
+        //bate.launchVel = speed;
+    } else {
+        ball.yVelocity = potentialY;
+        ball.xVelocity = potentialX;
     }
 
 };

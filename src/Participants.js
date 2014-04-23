@@ -42,13 +42,15 @@ Object.defineProperty(GameItem.prototype, "center", {
 // Ball - subclass
 function Ball() {
     GameItem.apply(this, arguments);
-    this.normalSpeed= {
+    this.normalSpeed = {
         x: 2,
-        y: -7 
+        y: -7
     };
     this.color = 'red';
     this.radius = 7;
     this.speedToNormal();
+
+    this.glued = null;
     //this.xVelocity = this.normalSpeed.x;
     this.power = 1;
     this.unstoppable = false;
@@ -66,6 +68,7 @@ Ball.prototype = Object.create(GameItem.prototype);
 Ball.prototype.update = function() {
     this.move();
 };
+
 Ball.prototype.draw = function() {
     this.game.canvasUtil.drawCircle(this.color, this.x + this.radius,
             this.y + this.radius, this.radius);
@@ -73,9 +76,14 @@ Ball.prototype.draw = function() {
 Ball.prototype.move = function() {
 
     //var bricksLevel = this.game.bricks.rows * this.game.brickProportions.height;
+    if (this.glued) {
+        var offset= this.glued;
+        this.x = this.game.bate.x + offset;
+    } else {
 
-    this.x += this.xVelocity;
-    this.y += this.yVelocity;
+        this.x += this.xVelocity;
+        this.y += this.yVelocity;
+    }
     /*
      if (this.y < bricksLevel && this.y > 0) {
      var row = Math.floor(this.y / this.game.brickProportions.height), col = Math
@@ -138,10 +146,11 @@ Ball.prototype.die = function() {
 
 function Bate() {
     GameItem.apply(this, arguments);
-    this.color = '#99CC00';
+    this.color = 'lightgray';
     this.width = 70;
     this.height = 20;
     this.normalWidth = 70;
+    //this.sticky = false;
     // this.x = this.game.canvas.width / 2 - this.width / 2;
     //  this.y = this.game.canvas.height - this.height;
 
@@ -175,8 +184,50 @@ Bate.prototype.extend = function() {
 };
 
 Bate.prototype.toNormalWidth = function() {
-  this.width = this.normalWidth;
+    this.width = this.normalWidth;
 };
+
+
+function StickyBate() {
+    Bate.apply(this, arguments);
+    this.sticky = true;
+    this.color = 'YellowGreen';
+    this.loaded = null;
+}
+
+StickyBate.prototype = Object.create(Bate.prototype);
+
+StickyBate.prototype.launch = function(ball, launchSpeed) {
+    if (!this.loaded) {
+        return;
+    }
+    this.loaded.ball.yVelocity = this.loaded.launchSpeed.y;
+    this.loaded.ball.xVelocity = this.loaded.launchSpeed.x;
+    this.loaded.ball.glued = null;
+    this.loaded = null;
+};
+
+StickyBate.prototype.constructor = StickyBate();
+
+
+function ArmedBate() {
+    Bate.apply(this, arguments);
+    this.armed = true;
+    this.loaded = 1;
+}
+
+ArmedBate.prototype = Object.create(Bate.prototype);
+
+ArmedBate.prototype.fire = function() {
+    
+};
+
+ArmedBate.prototype.reload = function() {
+    
+};
+
+
+ArmedBate.prototype.constructor = ArmedBate;
 
 function Brick(gameObject, color, properties, collectionObject) {
     GameItem.apply(this, arguments);
@@ -226,22 +277,22 @@ Brick.prototype.collide = function(ball) {
 
 Brick.prototype.randomizePrize = function() {
     var length = this.game.prizePossibility.length;
-    console.log(length);
-    var rand = Math.floor(Math.random()*(length-0.0001));
-       console.log(rand);
+    // console.log(length);
+    var rand = Math.floor(Math.random() * (length - 0.0001));
+    //  console.log(rand);
     return this.game.prizePossibility[rand];
- 
+
 };
 
 Brick.prototype.die = function() {
     this.game.totalScore += this.score;
     var lucky = this.randomizePrize();
-            //console.log(lucky);
+    //console.log(lucky);
     if (lucky) {
         var prize = this.game.randomPrize();
 
         console.log(prize);
-        prize.placeAt(this.center.x-prize.width/2, this.center.y-prize.height/2);
+        prize.placeAt(this.center.x - prize.width / 2, this.center.y - prize.height / 2);
     }
     this.collection.remove(this);
 
@@ -331,4 +382,60 @@ UnbreakableBrick.prototype = Object.create(Brick.prototype);
 
 UnbreakableBrick.prototype.constructor = UnbreakableBrick;
 
+function Bullet(game, bulletsCollection) {
+    GameItem.apply(this, arguments);
+    this.width = 5;
+    this.height = 10;
+    this.color = '#F5FFFA';
+    this.dy = -10;
+    this.power = 1;
+    this.collection = bulletsCollection;
+}
+
+Bullet.prototype = Object.create(GameItem.prototype);
+
+Bullet.prototype.draw = function() {
+    this.game.canvasUtil.drawBullet(this);
+};
+
+Bullet.prototype.move= function() {
+    this.y +=this.dy;
+};
+
+Bullet.prototype.explode = function() {
+    this.collection.remove(this);
+};
+
+
+
+
+Bullet.prototype.constructor = Bullet;
+
+function BulletCollection() {
+    this.bullets = [];
+}
+
+BulletCollection.prototype.draw = function() {
+    this.bullets.forEach(function(val){
+       val.draw(); 
+    });
+};
+
+BulletCollection.prototype.update = function() {
+        this.bullets.forEach(function(val){
+       val.move(); 
+    });
+};
+        
+BulletCollection.prototype.remove = function(bullet) {
+        this.bullets.forEach(function(val, index, array) {
+        if (val === bullet) {
+            array.splice(index, 1);
+        }
+    });
+};
+
+BulletCollection.prototype.add = function(bullet) {
+    this.prizes.push(bullet);
+};
 

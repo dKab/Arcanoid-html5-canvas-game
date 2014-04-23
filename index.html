@@ -5,45 +5,47 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-<head>
-<title>TODO supply a title</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<style type="text/css">
-#game_field {
-	border: 1px solid black;
-        border-top: 4px solid black;
-        border-left: 4px solid black;
-        cursor: none;
-}
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <style type="text/css">
+            #game_field {
+                border: 1px solid black;
+                border-top: 4px solid black;
+                border-left: 4px solid black;
+                cursor: none;
+            }
 
-</style>
+        </style>
 
-<script type="text/javascript" src="src/Game.js"></script>
-<script type="text/javascript" src="src/Participants.js"></script>
-<script type="text/javascript" src="src/CollisionResolver.js"></script>
-<script type="text/javascript" src="src/CanvasUtil.js"></script>
-<script type="text/javascript" src="src/Prizes.js"></script>
-</head>
-<body>
-	<canvas id="game_field" width="512" height="500">
+        <script type="text/javascript" src="src/Game.js"></script>
+        <script type="text/javascript" src="src/Participants.js"></script>
+        <script type="text/javascript" src="src/CollisionResolver.js"></script>
+        <script type="text/javascript" src="src/CanvasUtil.js"></script>
+        <script type="text/javascript" src="src/Prizes.js"></script>
+    </head>
+    <body>
+        <canvas id="game_field" width="512" height="500">
             Your browser  doesn't support canvas!
         </canvas><br>
-    score: <span id="score">0</span><br>
-    level: <span id="level">1</span><br>
-    lives left: <span id="lives">3</span>
-	<script type="text/javascript">
-		var game = new Game();
-		game.drawAll();
-                
-                function pauseToggle() {
-                    if (game.paused) {
-				game.start();
-			} else
-				game.pause();
-		}
-                
-		window.addEventListener('click', pauseToggle);
-	</script>
-</body>
+        score: <span id="score">0</span><br>
+        level: <span id="level">1</span><br>
+        lives left: <span id="lives">3</span>
+        <script type="text/javascript">
+
+            var game = new Game();
+            game.drawAll();
+
+            function pauseToggle(e) {
+                if (e.keyCode != 32)
+                    return;
+                if (game.paused) {
+                    game.start();
+                }
+            }
+
+            window.addEventListener('keypress', pauseToggle);
+        </script>
+    </body>
 </html>

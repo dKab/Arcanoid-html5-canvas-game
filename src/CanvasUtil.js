@@ -62,6 +62,18 @@ CanvasUtil.prototype.drawBrick = function(brick) {
 
 };
 
+CanvasUtil.prototype.drawBullet = function(bullet) {
+    var ctx = this.context,
+            x = brick.x,
+            y = brick.y,
+            width = bullet.width,
+            height = bullet.height;
+    //
+    
+    
+    
+};
+
 
 CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, toY) {
     var ctx = this.context,
@@ -163,6 +175,7 @@ CanvasUtil.prototype.drawPrize = function(prize) {
     ctx.beginPath();
     var grad = ctx.createLinearGradient(0, 0, 0, height);
     grad.addColorStop(0, 'rgba(0,0,0,0.3)');
+    grad.addColorStop(0.2, 'rgba(255,255,255,1)');
     grad.addColorStop(0.4, 'rgba(0,0,0, 0.0)');
     grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
     ctx.fillStyle = color;
@@ -175,7 +188,7 @@ CanvasUtil.prototype.drawPrize = function(prize) {
     ctx.fill();
     ctx.fillStyle = grad;
     ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,0.9)';
+    ctx.strokeStyle=color;
     ctx.lineWidth=2;
     ctx.stroke();
     
@@ -202,7 +215,7 @@ CanvasUtil.prototype.drawBate = function(bate) {
 	ctx.lineTo(width * 3 / 4, height);
 	ctx.lineTo(width * 3 / 4, 0);
 	ctx.closePath();
-	ctx.fillStyle = 'lightgray';
+	ctx.fillStyle = bate.color;
 	ctx.fill();
 	ctx.fillStyle = grad;
 	ctx.fill();
