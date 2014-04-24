@@ -60,7 +60,7 @@ function Ball() {
     //console.log(this.x);
     //console.log(this.y);
     this.width = this.height = this.radius * 2;
-
+    this.game.collisionResolver.registerBall(this);
 }
 
 Ball.prototype = Object.create(GameItem.prototype);
@@ -77,7 +77,7 @@ Ball.prototype.move = function() {
 
     //var bricksLevel = this.game.bricks.rows * this.game.brickProportions.height;
     if (this.glued) {
-        var offset= this.glued;
+        var offset = this.glued;
         this.x = this.game.bate.x + offset;
     } else {
 
@@ -124,6 +124,24 @@ Ball.prototype.move = function() {
 
 };
 
+
+Ball.prototype.disrupt = function() {
+    var left = new Ball(this.game);
+       var right = new Ball(this.game);
+    this.game.balls.push(left);
+    left.placeAt(this.x-this.width-5, this.y);
+    left.yVelocity = right.yVelocity = this.yVelocity;
+    left.xVelocity = this.xVelocity-1;
+    this.game.collisionResolver.registerBall(left);
+ 
+    this.game.balls.push(right);
+    right.placeAt(this.right + 5, this.y);
+     right.xVelocity = this.xVelocity +1;
+    this.game.collisionResolver.registerBall(right);
+    
+    console.log(this.game.balls);
+};
+
 Ball.prototype.speedToNormal = function() {
     this.xVelocity = this.normalSpeed.x;
     this.yVelocity = this.normalSpeed.y;
@@ -135,6 +153,14 @@ Ball.prototype.die = function() {
             this.game.balls.splice(index, 1);
         }
     }, this);
+    this.game.collisionResolver.unregisterBall(this);
+    
+    console.log(this.game.balls);
+    
+    if (this.game.balls.length == 1) {
+        this.game.restore();
+        console.log('restored');
+    }
 
     if (this.game.balls.length === 0) {
         this.game.decrementLives();
@@ -185,6 +211,7 @@ Bate.prototype.extend = function() {
 
 Bate.prototype.toNormalWidth = function() {
     this.width = this.normalWidth;
+    this.finalWidth = null;
 };
 
 
@@ -213,19 +240,24 @@ StickyBate.prototype.constructor = StickyBate();
 function ArmedBate() {
     Bate.apply(this, arguments);
     this.armed = true;
-    this.loaded = 1;
+    this.lastFired = 0;
+    this.coolDown = 500;
 }
 
 ArmedBate.prototype = Object.create(Bate.prototype);
 
 ArmedBate.prototype.fire = function() {
-    
+    var now = new Date().getTime();
+    if (now - this.lastFired < this.coolDown) {
+        return;
+    } else {
+        var left = this.game.bullets.create();
+        left.placeAt(this.x + 5, this.y + left.height);
+        var right = this.game.bullets.create();
+        right.placeAt(this.right - 5 - right.width, this.y + right.height);
+        this.lastFired = new Date().getTime();
+    }
 };
-
-ArmedBate.prototype.reload = function() {
-    
-};
-
 
 ArmedBate.prototype.constructor = ArmedBate;
 
@@ -286,7 +318,8 @@ Brick.prototype.randomizePrize = function() {
 
 Brick.prototype.die = function() {
     this.game.totalScore += this.score;
-    var lucky = this.randomizePrize();
+    
+    var lucky = this.game.generatePrizes && this.randomizePrize();
     //console.log(lucky);
     if (lucky) {
         var prize = this.game.randomPrize();
@@ -384,7 +417,7 @@ UnbreakableBrick.prototype.constructor = UnbreakableBrick;
 
 function Bullet(game, bulletsCollection) {
     GameItem.apply(this, arguments);
-    this.width = 5;
+    this.width = 6;
     this.height = 10;
     this.color = '#F5FFFA';
     this.dy = -10;
@@ -398,8 +431,8 @@ Bullet.prototype.draw = function() {
     this.game.canvasUtil.drawBullet(this);
 };
 
-Bullet.prototype.move= function() {
-    this.y +=this.dy;
+Bullet.prototype.move = function() {
+    this.y += this.dy;
 };
 
 Bullet.prototype.explode = function() {
@@ -411,31 +444,42 @@ Bullet.prototype.explode = function() {
 
 Bullet.prototype.constructor = Bullet;
 
-function BulletCollection() {
+function BulletCollection(game) {
+    this.game = game;
     this.bullets = [];
 }
 
 BulletCollection.prototype.draw = function() {
-    this.bullets.forEach(function(val){
-       val.draw(); 
+    this.bullets.forEach(function(val) {
+        val.draw();
     });
 };
 
 BulletCollection.prototype.update = function() {
-        this.bullets.forEach(function(val){
-       val.move(); 
+    this.bullets.forEach(function(val) {
+        val.move();
     });
 };
-        
+
 BulletCollection.prototype.remove = function(bullet) {
-        this.bullets.forEach(function(val, index, array) {
+    this.bullets.forEach(function(val, index, array) {
         if (val === bullet) {
             array.splice(index, 1);
         }
     });
+    this.game.collisionResolver.unregisterBullet(bullet);
 };
 
-BulletCollection.prototype.add = function(bullet) {
-    this.prizes.push(bullet);
+BulletCollection.prototype.create = function() {
+    var bullet = new Bullet(this.game, this);
+    this.bullets.push(bullet);
+    this.game.collisionResolver.registerBullet(bullet);
+    return bullet;
 };
+
+BulletCollection.prototype.purge = function() {
+    this.bullets = [];
+};
+
+BulletCollection.prototype.constructor = BulletCollection;
 

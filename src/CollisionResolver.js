@@ -1,7 +1,45 @@
 function CollisionResolver(game) {
     this.game = game;
+    this.balls = [];
+    this.bullets =[];
 
 }
+
+CollisionResolver.prototype.registerBall = function(ball) {
+  this.balls.push(ball);  
+};
+
+
+CollisionResolver.prototype.registerBullet = function(bullet) {
+  this.bullets.push(bullet);  
+};
+
+
+CollisionResolver.prototype.update = function() {
+    this.balls.forEach(function(val) {
+        this.watch(val);
+    }, this);
+    
+    this.bullets.forEach(function(val) {
+        this.watchBullet(val);
+    },this);
+};
+
+CollisionResolver.prototype.unregisterBall = function(ball) {
+    this.balls.forEach(function(val, ind, arr){
+        if (ball === val) {
+            arr.splice(ind,1);
+        }
+    });
+};
+
+CollisionResolver.prototype.unregisterBullet = function(bullet) {
+        this.bullets.forEach(function(val, ind, arr){
+        if (bullet === val) {
+            arr.splice(ind,1);
+        }
+    });
+};
 
 CollisionResolver.prototype.conduct = function(ball) {
     var bricks = this.game.bricks;
@@ -165,6 +203,31 @@ CollisionResolver.prototype.watch = function(ball) {
         this.conduct(ball);
     } else if (ball.bottom >= bate.y && ball.y<=bate.center.y && ball.yVelocity > 0) {
         this.handleBateCollision(ball, bate);
+    }
+};
+
+
+CollisionResolver.prototype.watchBullet = function(bullet) {
+  var bricksLevel = this.game.bricks.rows * this.game.bricks.brickProportions.height;
+  
+  if (bullet.y <=bricksLevel) {
+      this.conductBullet(bullet);
+  }
+};
+
+CollisionResolver.prototype.conductBullet = function(bullet) { 
+    var bricks = this.game.bricks;
+    var width = this.game.bricks.brickProportions.width,
+            height = this.game.bricks.brickProportions.height;
+        var col = Math.floor(bullet.center.x / width);
+    var row = Math.floor(bullet.y / height);
+    var brick = bricks.getBrick(row, col);
+    if (brick) {
+        brick.collide(bullet);
+        bullet.explode();
+    }
+    if(bullet.bottom <= 0) {
+        bullet.explode();
     }
 };
 

@@ -12,16 +12,21 @@ function Game() {
     this.totalScore = 0;
     this.paused = true;
     this.lastRender = 0;
-    
+
+    this.generatePrizes = 1;
+
     this.currentListener = null;
-    
-    this.prizeTypes = ['ExtendPrize', 'GluePrize', 'SlowPrize'];
-    this.prizePossibility = [0,0,0,1];
-    
+
+    this.prizeTypes = ['ExtendPrize', 'GluePrize', 'SlowPrize', 'PlasmaGunPrize', 'DisruptionPrize',
+    'ExtraLifePrize'];
+    this.prizePossibility = [0, 0, 0, 1];
+
     this.prizes = new PrizeCollection();
-    
+
+    this.bullets = new BulletCollection(this);
+
     this.activePowerup = null;
-    
+    this.collisionResolver = new CollisionResolver(this);
 
     var bate = new Bate(this);
     //bate.placeAt(256 - bate.width / 2, 450);
@@ -32,6 +37,47 @@ function Game() {
     this.balls.push(ball);
     this.levels = {
         1: [
+           ['w', 'g', 'w', 'g', 'w', 'g', 'w', 'g'],
+           ['a', 'w', 'a', 'w', 'a', 'w', 'a', 'w'],
+           ['s', 's', 's', 's', 's', 's', 's', 's'],
+           ['b', 'o', 'b', 'o', 'b', 'o', 'b', 'o'],
+           ['o', 'g', 'o', 'g', 'o', 'g', 'o', 'g'],
+           ['s', 's', 's', 's', 's', 's', 's', 's']
+        ],   
+        2: [
+           ['p', 'p', 'y', 's', 's', 'y', 'p', 'p'],
+           ['p', 'y', 'p', 'g', 'g', 'p', 'y', 'p'],
+           ['y', 's', 'g', 0, 0, 'g', 's', 'y'],
+           [0, 'p', 0, 'b', 0, 'p', 0, 'b'],
+           ['b', 0, 'p', 0, 'b', 0, 'p', 0],
+           ['y', 's', 'g', 0, 0, 'g', 's', 'y'],
+           [0, 'y', 0, 'g', 'g', 0, 'y', 0],
+           [0, 0, 'y', 's', 's', 'y', 0, 0]
+        ],
+        3: [
+           [0,   0,   0,   0,   0,   0,   0, 0],
+           [0,   0,   0,   0,   0,   0,   0, 0],
+           [0,   0, 'u', 'u', 'u', 'u',   0, 0],
+           [0, 'u', 'g', 'b', 'b', 'g', 'u', 0],
+           [0, 'u', 'b', 'y', 'y', 'b', 'u', 0],
+           [0, 'u', 'a', 'a', 'a', 'a', 'u', 0],
+           [0, 'u', 'g', 'b', 'b', 'g', 'u', 0],
+           [0, 'u', 'g', 'b', 'b', 'g', 'u', 0],
+           [0,   0, 'u', 'w', 'w', 'u',   0, 0]
+        ],
+        4: [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 'w', 'w', 'w', 'w', 'w', 'w', 0],
+            [0, 's', 'g', 'g', 'b', 'b', 's', 0],
+            [0, 0, 's', 'p', 'p', 's', 0, 0],
+            [0, 0, 0, 's', 's', 0, 0, 0],
+            [0, 0, 's', 'p', 'p', 's', 0, 0],
+            [0, 's', 'g', 'g', 'b', 'b', 's', 0],
+            ['y', 'y', 'g', 'g', 'b', 'b', 'y', 'y'],
+            
+        ],
+        5: [
             ['b', 0, 0, 0, 0, 0, 0, 0],
             ['g', 'g', 0, 0, 0, 0, 0, 0],
             ['y', 'y', 'y', 0, 0, 0, 0, 0],
@@ -40,7 +86,7 @@ function Game() {
             ['p', 'p', 'p', 'p', 'p', 'p', 0, 0],
             ['u', 'u', 'u', 'u', 'u', 'u', 's', 's']
         ],
-        2: [
+        6: [
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 's', 's', 0, 0, 0],
@@ -55,7 +101,7 @@ function Game() {
 
 
     this.renderLevel();
-    this.collisionResolver = new CollisionResolver(this);
+
 
 }
 
@@ -79,18 +125,18 @@ Game.prototype.gameloop = function() {
 };
 
 Game.prototype.restore = function() {
-  
-  return this.activePowerup && this.activePowerup.prototype.deactivate.call(this);  
+
+    return this.activePowerup && this.activePowerup.prototype.deactivate.call(this);
 };
 
 Game.prototype.randomPrize = function() {
-  var int = Math.floor(Math.random()*(this.prizeTypes.length-0.0001)),
-                type=this.prizeTypes[int];
-        console.log(int);
-        console.log('type: '+type);
-        var prize = new window[type](this, this.prizes);
-        this.prizes.add(prize);
-        return prize;
+    var int = Math.floor(Math.random() * (this.prizeTypes.length - 0.0001)),
+            type = this.prizeTypes[int];
+    console.log(int);
+    console.log('type: ' + type);
+    var prize = new window[type](this, this.prizes);
+    this.prizes.add(prize);
+    return prize;
 };
 
 Game.prototype.win = function() {
@@ -112,6 +158,7 @@ Game.prototype.renderLevel = function() {
     this.bricks = new BricksCollection(this);
     this.toInitialPosition();
     this.prizes.purge();
+    this.bullets.purge();
     // this.balls[0].xVelocity = 0;
     //this.balls[0].yVelocity =0;
     this.drawAll();
@@ -119,8 +166,10 @@ Game.prototype.renderLevel = function() {
 
 Game.prototype.decrementLives = function() {
     this.lives--;
+    this.totalScore = Math.max(this.totalScore - 500, 0);
 
-    if (this.lives === 0) {
+    if (this.lives < 0) {
+        this.lives = 0;
         this.over();
         return;
     }
@@ -185,9 +234,9 @@ Game.prototype.nextLevel = function() {
     if (!this.levels[this.stage])
         this.win();
     else {
- this.restore();
+        this.restore();
         this.renderLevel();
-               
+
     }
     //this.inProgress = false;
 
@@ -197,13 +246,12 @@ Game.prototype.nextLevel = function() {
 Game.prototype.drawAll = function() {
     this.canvasUtil.clear();
     this.canvasUtil.fillBlack();
-
-    for (var i = 0; i < this.balls.length; i++) {
+        for (var i = 0; i < this.balls.length; i++) {
         this.balls[i].draw();
     }
-
-    this.bate.draw();
     this.bricks.draw();
+        this.bate.draw();
+    this.bullets.draw();
     this.prizes.draw();
 };
 
@@ -214,8 +262,15 @@ Game.prototype.updateAll = function() {
     }
     ;
     this.bate.update();
+    this.bullets.update();
     this.prizes.update();
-    this.collisionResolver.watch(this.balls[0]);
+    /*
+     this.balls.forEach(function(val) {
+     this.collisionResolver.watch(val);
+     }, this);
+     */
+    //this.collisionResolver.watch(this.balls[0]);
+    this.collisionResolver.update();
     var score = document.getElementById('score'),
             level = document.getElementById('level'),
             lives = document.getElementById('lives');

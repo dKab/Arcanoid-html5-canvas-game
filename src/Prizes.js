@@ -1,7 +1,7 @@
 function Prize(game, collectionObject) {
     GameItem.apply(this, arguments);
-    this.width = 28;
-    this.height = 14;
+    this.width = 36;
+    this.height = 16;
     this.dy = 4;
     this.collection = collectionObject;
 }
@@ -30,7 +30,7 @@ Prize.prototype.die = function() {
 Prize.prototype.constructor = Prize;
 function ExtendPrize() {
     Prize.apply(this, arguments);
-    this.color = 'aquamarine';
+    this.color = '#2E8AE6';
     this.letter = 'E';
 }
 
@@ -45,9 +45,53 @@ ExtendPrize.prototype.deactivate = function() {
     this.activePowerup = null;
 };
 ExtendPrize.prototype.constructor = ExtendPrize;
+
+
+function PlasmaGunPrize() {
+    Prize.apply(this, arguments);
+    this.color = 'red';
+    this.letter = 'P';
+}
+
+PlasmaGunPrize.prototype = Object.create(Prize.prototype);
+
+PlasmaGunPrize.prototype.activate = function() {
+    this.game.restore();
+    var x = this.game.bate.x,
+            y = this.game.bate.y;
+    //console.log(this.game);
+    this.game.bate = new ArmedBate(this.game);
+    this.game.bate.placeAt(x, y);
+    //console.log(this.game.bate);
+    var listener = this.listener.bind(this.game);
+    window.addEventListener('keypress', listener);
+    this.game.currentListener = listener;
+    //this.game.bate = new St;
+    this.game.activePowerup = this.constructor;
+};
+
+PlasmaGunPrize.prototype.deactivate = function() {
+    var x = this.bate.x,
+            y = this.bate.y;
+    this.bate = new Bate(this);
+    this.bate.placeAt(x, y);
+    this.activePowerup = null;
+    window.removeEventListener('keypress', this.currentListener);
+    this.currentListener = null;
+};
+
+PlasmaGunPrize.prototype.listener = function(e) {
+    if (e.keyCode != 32) {
+        return;
+    }
+    this.bate.fire();
+};
+
+PlasmaGunPrize.prototype.constructor = PlasmaGunPrize;
+
 function GluePrize() {
     Prize.apply(this, arguments);
-    this.color = 'YellowGreen';
+    this.color = '#006600';
     this.letter = 'G';
 }
 
@@ -67,13 +111,8 @@ GluePrize.prototype.activate = function() {
     this.game.activePowerup = this.constructor;
 };
 GluePrize.prototype.deactivate = function() {
-    var x = this.bate.x,
-            y = this.bate.y;
-    this.bate = new Bate(this);
-    this.bate.placeAt(x, y);
-    this.activePowerup = null;
-    window.removeEventListener('keypress', this.currentListener);
-    this.currentListener = null;
+    this.bate.launch();
+    PlasmaGunPrize.prototype.deactivate.call(this);
 };
 GluePrize.prototype.listener = function(e) {
     if (e.keyCode != 32) {
@@ -84,7 +123,7 @@ GluePrize.prototype.listener = function(e) {
 GluePrize.prototype.constructor = GluePrize;
 function SlowPrize() {
     Prize.apply(this, arguments);
-    this.color = 'DarkOrange';
+    this.color = '#E65C00';
     this.letter = 'S';
 }
 SlowPrize.prototype = Object.create(Prize.prototype);
@@ -105,41 +144,51 @@ SlowPrize.prototype.deactivate = function() {
 };
 SlowPrize.prototype.constructor = SlowPrize;
 
-
-function PlasmaGunPrize() {
+function DisruptionPrize() {
     Prize.apply(this, arguments);
-    this.color = 'red';
-    this.letter='P';
+    this.color = '#990033';
+    this.letter = 'D';
 }
 
-PlasmaGunPrize.prototype = Object.create(Prize.prototype);
+DisruptionPrize.prototype = Object.create(Prize.prototype);
 
-PlasmaGunPrize.prototype.activate = function() {
-        this.game.restore();
-    var x = this.game.bate.x,
-            y = this.game.bate.y;
-    //console.log(this.game);
-    this.game.bate = new ArmedBate(this.game);
-    this.game.bate.placeAt(x, y);
-    //console.log(this.game.bate);
-    var listener = this.listener.bind(this.game);
-    window.addEventListener('keypress', listener);
-    this.game.listeners = listener;
-    //this.game.bate = new St;
+DisruptionPrize.prototype.activate = function() {
+    this.game.restore();
+    this.game.generatePrizes = null;
+    this.game.balls.forEach(function(ball) {
+        ball.disrupt();
+    });
     this.game.activePowerup = this.constructor;
+    this.collection.purge();
 };
 
-PlasmaGunPrize.prototype.deactivate = GluePrize.prototype.deactivate;
-
-PlasmaGunPrize.prototype.listener = function(e) {
-        if (e.keyCode != 32) {
-        return;
-    }
-    return this.bate.loaded && this.bate.fire();
+DisruptionPrize.prototype.deactivate = function() {
+    this.generatePrizes = 1;
+    this.activePowerup = null;
 };
 
-PlasmaGunPrize.prototype.constructor = PlasmaGunPrize;
 
+DisruptionPrize.prototype.constructor = DisruptionPrize;
+
+
+function ExtraLifePrize() {
+    Prize.apply(this, arguments);
+    this.color = 'gray';
+    this.letter = 'L';
+}
+
+ExtraLifePrize.prototype = Object.create(Prize.prototype);
+
+ExtraLifePrize.prototype.activate = function() {
+    this.game.lives = Math.min(this.game.lives+1, 10);
+};
+
+ExtraLifePrize.prototype.deactivate = function() {
+    return;
+};
+
+
+ExtraLifePrize.prototype.constructor = ExtraLifePrize;
 
 
 function PrizeCollection() {
