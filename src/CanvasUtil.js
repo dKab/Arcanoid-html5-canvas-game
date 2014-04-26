@@ -1,5 +1,8 @@
-function CanvasUtil(canvas) {
+function CanvasUtil(game, canvas, fieldWidth, fieldHeight) {
+    this.game = game;
     this.canvas = canvas;
+    this.fieldWidth = fieldWidth;
+    this.fieldHeight = fieldHeight;
     this.context = canvas.getContext('2d');
 }
 
@@ -10,44 +13,60 @@ CanvasUtil.prototype.drawBrick = function(brick) {
             y = brick.y,
             height = brick.height,
             width = brick.width;
+
+    //var shadow = (!brick.below || !brick.nextInRow);
+    //console.log(shadow);
     ctx.save();
     ctx.translate(brick.x, brick.y);
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 2;
     ctx.fillStyle = brick.color;
-    /*
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 10;
-    ctx.shadowOffsetY = 10;
-*/
 
+    /*
+     if (shadow) {
+     ctx.save();
+     ctx.shadowColor = 'rgba(0,0,0,0.25)';
+     ctx.shadowBlur = 20;
+     ctx.shadowOffsetX = 10;
+     ctx.shadowOffsetY = 10;
+     }
+     */
     ctx.fillRect(0, 0, width, height);
 
     ctx.beginPath();
-    ctx.moveTo(width - 2, 0);
-    ctx.lineTo(width - 2, height - 2);
-    ctx.lineTo(0, height - 2);
+    ctx.moveTo(width - 1, 0);
+    ctx.lineTo(width - 1, height - 1);
+    ctx.lineTo(0, height - 1);
     ctx.strokeStyle = "black";
     ctx.stroke();
-/*
-    ctx.restore();
-*/
+    /*
+     if (shadow) {
+     ctx.restore();
+     }
+     */
     if (tough) {
+        ctx.save();
+        ctx.lineWidth = 4;
         ctx.beginPath();
-        ctx.moveTo(2, height - 8);
+        ctx.moveTo(2, height - 6);
 
         ctx.lineTo(2, 2);
-        ctx.lineTo(width - 8, 2);
+        ctx.lineTo(width - 6, 2);
 
         ctx.strokeStyle = "rgba(255,255,255,0.3)";
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(width - 6, 0);
-        ctx.lineTo(width - 6, height - 6);
-        ctx.lineTo(0, height - 6);
+        ctx.moveTo(width - 4, 0);
+        ctx.lineTo(width - 4, height - 4);
+        ctx.lineTo(0, height - 4);
         ctx.strokeStyle = "rgba(0,0,0,0.3)";
+        ctx.stroke();
+        ctx.restore();
+    }
+    if (brick.isFirst()) {
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(0, height);
         ctx.stroke();
     }
 
@@ -56,7 +75,7 @@ CanvasUtil.prototype.drawBrick = function(brick) {
         var stripWidth = Math.round(brick.width / 2.5);
         //var now = new Date().getTime(),
         //  phase = (now - brick.startedBlinking)/500;
-        if (brick.currX - 2 * stripWidth > width - 4) {
+        if (brick.currX - 2 * stripWidth > width - 2) {
             brick.stopBlinking();
         } else {
             brick.currX += 5;
@@ -94,8 +113,8 @@ CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, 
     var ctx = this.context,
             brickX = brick.x,
             brickY = brick.y,
-            width = brick.width - 4,
-            height = brick.height - 4;
+            width = brick.width - 2,
+            height = brick.height - 2;
 
     ctx.save();
     ctx.translate(brickX, brickY);
@@ -132,8 +151,8 @@ CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, 
 CanvasUtil.prototype.calcDest = function(brick) {
     var x = brick.currX,
             y = brick.currY,
-            width = brick.width - 4,
-            height = brick.height - 4;
+            width = brick.width - 2,
+            height = brick.height - 2;
 
     var fromX = x,
             fromY = 0;
@@ -224,7 +243,7 @@ CanvasUtil.prototype.drawPrize = function(prize) {
     ctx.fillStyle = 'yellow';
     ctx.shadowColor = 'black';
     ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
+    ctx.shadowOffsetY = 0;
     ctx.font = "bold 14pt Courier"
     ctx.textAlign = 'center';
     ctx.fillText(prize.letter, 0, 0, width);
@@ -233,8 +252,9 @@ CanvasUtil.prototype.drawPrize = function(prize) {
     ctx.restore();
 };
 
-CanvasUtil.prototype.drawBate = function(bate) {
+CanvasUtil.prototype.drawBate = function(bate, shadow) {
     var ctx = this.context;
+    var shadow = shadow || null;
     var width = bate.width,
             height = bate.height,
             x = bate.x,
@@ -246,13 +266,14 @@ CanvasUtil.prototype.drawBate = function(bate) {
     grad.addColorStop(0, 'rgba(0,0,0,0.4)');
     grad.addColorStop(0.3, 'rgba(0,0,0, 0.0)');
     grad.addColorStop(1, 'rgba(0,0,0, 0.5)');
-    ctx.save();
+    if (shadow) {
+        ctx.save();
 
-    ctx.shadowColor = 'rgba(0,0,0,0.7)';
-    ctx.shadowBlur = 5;
-    ctx.shadowOffsetX = 15;
-    ctx.shadowOffsetY = 25;
-
+        ctx.shadowColor = 'rgba(0,0,0,0.7)';
+        ctx.shadowBlur = 5;
+        ctx.shadowOffsetX = 15;
+        ctx.shadowOffsetY = 25;
+    }
     ctx.beginPath();
     ctx.arc(height / 2, height / 2, height / 2, Math.PI / 2,
             Math.PI * 3 / 2);
@@ -295,9 +316,9 @@ CanvasUtil.prototype.drawBate = function(bate) {
     ctx.fill();
     ctx.fillStyle = grad;
     ctx.fill();
-
-    ctx.restore();
-
+    if (shadow) {
+        ctx.restore();
+    }
     ctx.beginPath();
     ctx.arc(height / 2, height / 2, height / 2, Math.PI * 2 / 3, Math.PI * 4 / 3);
     ctx.closePath();
@@ -334,12 +355,133 @@ CanvasUtil.prototype.drawBate = function(bate) {
 };
 
 CanvasUtil.prototype.clear = function() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(0, 0, this.fieldWidth, this.fieldHeight);
 };
 
 CanvasUtil.prototype.fillBlack = function() {
     this.context.fillStyle = '#00004A';
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillRect(0, 0, this.fieldWidth, this.fieldHeight);
+    this.drawSeparator();
+};
+
+CanvasUtil.prototype.fillMargin = function() {
+    this.context.fillStyle = 'black';
+    this.context.fillRect(this.fieldWidth, 0, this.canvas.width - this.fieldWidth, this.fieldHeight);
+
+};
+
+
+CanvasUtil.prototype.drawStatistics = function() {
+    var ctx = this.context;
+    ctx.save();
+    ctx.translate(this.fieldWidth + 20, 0);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 30px  arial';
+    ctx.fillText('Score: ', 0, 40, this.canvas.width - this.fieldWidth - 100);
+    ctx.fillText('Level: ', 0, 120, this.canvas.width - this.fieldWidth - 100);
+    ctx.fillText('Lives left: ', 0, 180, this.canvas.width - this.fieldWidth - 100);
+    ctx.restore();
+    //var extPrize = new ExtendPrize(this.game, this.game.prizes);
+    //extPrize.placeAt()
+    //this.drawPrize();
+
+};
+
+CanvasUtil.prototype.drawDescription = function() {
+    var ctx = this.context;
+    ctx.save();
+    ctx.translate(this.fieldWidth + 20, 260);
+    ctx.fillStyle = 'yellow';
+    ctx.font = 'bold 30px arial';
+    ctx.fillText('Powerups: ', 0, 0);
+
+    ctx.fillStyle = 'white';
+
+    var ext = new ExtendPrize(this.game);
+    ext.placeAt(0, 40);
+    this.drawPrize(ext);
+    //ctx.save();
+    ctx.font = 'bold 15px arial';
+    ctx.fillText(' - Extend', 40, 54);
+
+    var glue = new GluePrize(this.game);
+    glue.placeAt(0, 70);
+    this.drawPrize(glue);
+    ctx.fillText(' - Glue', 40, 84);
+    
+    var slow = new SlowPrize(this.game);
+    slow.placeAt(0, 100);
+    this.drawPrize(slow);
+    ctx.fillText(' - Slow down', 40, 114);
+    
+    var dis = new DisruptionPrize(this.game);
+    dis.placeAt(0, 130);
+    this.drawPrize(dis);
+    ctx.fillText( ' - Disruption', 40, 144);
+    
+    var pl = new PlasmaGunPrize(this.game);
+    pl.placeAt(0, 160);
+    this.drawPrize(pl);
+    ctx.fillText( ' - Plasma gun', 40, 174);
+    
+    var life = new ExtraLifePrize(this.game);
+    life.placeAt(0, 190);
+    this.drawPrize(life);
+    ctx.fillText(' - Extra life', 40, 204);
+    
+    ctx.font = 'bold 30px arial';
+    ctx.fillText('Controls: ', 0, 264);
+    ctx.font = 'bold 15px arial';
+    ctx.fillText('fire/continue - <space>', 0, 290);
+    ctx.fillText('move - <mouse>', 0, 320)
+
+    ctx.restore();
+};
+
+CanvasUtil.prototype.updateStatistics = function(score, level) {
+    var ctx = this.context;
+    ctx.save();
+    ctx.translate(this.fieldWidth, 0);
+    ctx.clearRect(150, 0, this.canvas.width - this.fieldWidth - 150, 200);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(150, 0, this.canvas.width - this.fieldWidth - 150, 200);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 30px  arial';
+    ctx.fillText(score, 150, 40, this.canvas.width - this.fieldWidth - 200);
+    ctx.fillText(level, 150, 120, this.canvas.width - this.fieldWidth - 200);
+    ctx.restore();
+};
+
+CanvasUtil.prototype.updateLives = function() {
+    var ctx = this.context;
+    ctx.save();
+    ctx.translate(this.fieldWidth + 20, 200);
+    ctx.clearRect(0, 0, this.canvas.width - this.fieldWidth - 20, 40);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, this.canvas.width - this.fieldWidth - 20, 40);
+    ctx.scale(0.5, 0.5);
+    var bate = new Bate(this.game);
+
+    for (var i = 0, offset = 0; i < this.game.lives; i++, offset += 15) {
+        bate.placeAt(i * bate.width + offset, 0);
+        //bate.    
+        this.drawBate(bate);
+    }
+    ctx.restore();
+};
+
+
+CanvasUtil.prototype.drawSeparator = function() {
+    var ctx = this.context;
+    ctx.save();
+    ctx.translate(this.fieldWidth + 2, 0);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'silver';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, this.fieldHeight);
+    ctx.stroke();
+    ctx.restore();
 };
 
 
@@ -350,13 +492,13 @@ CanvasUtil.prototype.message = function(message) {
     //ctx.save();
     //ctx.beginPath();
     ctx.fillStyle = 'white';
-    ctx.strokeStyle = 'pink';
+    ctx.strokeStyle = 'red';
     //ctx.lineWidth = 4;
-    ctx.font = 'bold 30px impact';
+    ctx.font = 'bold 60px impact';
     ctx.textAlign = 'center';
     //ctx.stroke();
-    ctx.fillText(message, 250, this.canvas.height / 2 + 100, 500);
-    ctx.strokeText(message, 250, this.canvas.height / 2 + 100, 500);
+    ctx.fillText(message, 300, this.canvas.height / 2 + 100, 500);
+    ctx.strokeText(message, 300, this.canvas.height / 2 + 100, 500);
     //ctx.restore();
 };
 

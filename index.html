@@ -11,10 +11,16 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width">
         <style type="text/css">
             #game_field {
-                border: 1px solid black;
-                border-top: 4px solid black;
-                border-left: 4px solid black;
+                display: block;
+                width: 898 px;
+                margin: 0 auto;
+                border: 2px solid silver;
+                //border-left: 4px solid silver;
+
                 cursor: none;
+            }
+            body {
+                background-color: #000000;
             }
 
         </style>
@@ -26,12 +32,14 @@ and open the template in the editor.
         <script type="text/javascript" src="src/Prizes.js"></script>
     </head>
     <body>
-        <canvas id="game_field" width="512" height="500">
+        <canvas id="game_field" width="898" height="640" >
             Your browser  doesn't support canvas!
-        </canvas><br>
+        </canvas>
+        <!--
         score: <span id="score">0</span><br>
         level: <span id="level">1</span><br>
         lives left: <span id="lives">3</span>
+        -->
         <script type="text/javascript">
 
             var game = new Game();

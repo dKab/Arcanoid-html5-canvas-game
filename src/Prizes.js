@@ -1,7 +1,7 @@
 function Prize(game, collectionObject) {
     GameItem.apply(this, arguments);
-    this.width = 36;
-    this.height = 16;
+    this.width = 32;
+    this.height = 14;
     this.dy = 4;
     this.collection = collectionObject;
 }
@@ -180,7 +180,14 @@ function ExtraLifePrize() {
 ExtraLifePrize.prototype = Object.create(Prize.prototype);
 
 ExtraLifePrize.prototype.activate = function() {
-    this.game.lives = Math.min(this.game.lives+1, 10);
+    var was = this.game.lives;
+    this.game.lives = Math.min(this.game.lives + 1, 5);
+    var diff = this.game.lives - was;
+    if (diff) {
+        this.game.canvasUtil.updateLives();
+    } else {
+        this.game.totalScore += 500;
+    }
 };
 
 ExtraLifePrize.prototype.deactivate = function() {
@@ -191,8 +198,10 @@ ExtraLifePrize.prototype.deactivate = function() {
 ExtraLifePrize.prototype.constructor = ExtraLifePrize;
 
 
-function PrizeCollection() {
+function PrizeCollection(game) {
     this.prizes = [];
+    this.factory = new PrizeFactory(game);
+    
 }
 
 PrizeCollection.prototype.add = function(prize) {
@@ -219,3 +228,38 @@ PrizeCollection.prototype.purge = function() {
     this.prizes = [];
 };
 
+PrizeCollection.prototype.create = function(type) {
+    var prize = this.factory.create(type);
+    this.add(prize);
+    return prize;
+};
+
+function PrizeFactory(game) {
+    this.game = game;
+}
+
+PrizeFactory.prototype.create = function(type) {
+    var prize;
+    switch (type) {
+        case 'ExtendPrize':
+            prize = new ExtendPrize(this.game, this.game.prizes);
+            break;
+        case 'GluePrize':
+            prize = new GluePrize(this.game, this.game.prizes);
+            break;
+        case 'SlowPrize':
+            prize = new SlowPrize(this.game, this.game.prizes);
+            break;
+        case 'DisruptionPrize':
+            prize = new DisruptionPrize(this.game, this.game.prizes);
+            break;
+        case 'PlasmaGunPrize':
+            prize = new PlasmaGunPrize(this.game, this.game.prizes);
+            break;
+        case 'ExtraLifePrize':
+            prize = new ExtraLifePrize(this.game, this.game.prizes);
+            break;
+        default: return null;
+    }
+    return prize;
+};

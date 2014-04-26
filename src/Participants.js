@@ -43,11 +43,11 @@ Object.defineProperty(GameItem.prototype, "center", {
 function Ball() {
     GameItem.apply(this, arguments);
     this.normalSpeed = {
-        x: 2,
+        x: 3,
         y: -7
     };
-    this.color = 'red';
-    this.radius = 7;
+    this.color = '#FFFF99';
+    this.radius = 5;
     this.speedToNormal();
 
     this.glued = null;
@@ -80,9 +80,15 @@ Ball.prototype.move = function() {
         var offset = this.glued;
         this.x = this.game.bate.x + offset;
     } else {
-
+/*
         this.x += this.xVelocity;
         this.y += this.yVelocity;
+        */
+       var now = new Date().getTime();
+       var delta = now - this.game.lastRender;
+       var k = delta/this.game.delay;
+       this.x += this.xVelocity * k;
+       this.y += this.yVelocity * k;
     }
     /*
      if (this.y < bricksLevel && this.y > 0) {
@@ -97,6 +103,7 @@ Ball.prototype.move = function() {
     //console.log(Math.atan2(this.yVelocity, this.xVelocity) * 180/Math.PI);
     if (this.y <= 0) {
         this.yVelocity = -this.yVelocity;
+        this.y= 1;
     }
 
 
@@ -139,7 +146,7 @@ Ball.prototype.disrupt = function() {
      right.xVelocity = this.xVelocity +1;
     this.game.collisionResolver.registerBall(right);
     
-    console.log(this.game.balls);
+    //console.log(this.game.balls);
 };
 
 Ball.prototype.speedToNormal = function() {
@@ -189,7 +196,7 @@ Bate.prototype = Object.create(GameItem.prototype);
 
 Bate.prototype.draw = function() {
     var color = this.color;
-    this.game.canvasUtil.drawBate(this);
+    this.game.canvasUtil.drawBate(this, true);
 };
 Bate.prototype.collide = function(ball) {
     ball.yVelocity = -ball.yVelocity;
@@ -241,7 +248,7 @@ function ArmedBate() {
     Bate.apply(this, arguments);
     this.armed = true;
     this.lastFired = 0;
-    this.coolDown = 500;
+    this.coolDown = 300;
 }
 
 ArmedBate.prototype = Object.create(Bate.prototype);
@@ -418,9 +425,9 @@ UnbreakableBrick.prototype.constructor = UnbreakableBrick;
 function Bullet(game, bulletsCollection) {
     GameItem.apply(this, arguments);
     this.width = 6;
-    this.height = 10;
+    this.height = 16;
     this.color = '#F5FFFA';
-    this.dy = -10;
+    this.dy = -7;
     this.power = 1;
     this.collection = bulletsCollection;
 }
@@ -432,7 +439,10 @@ Bullet.prototype.draw = function() {
 };
 
 Bullet.prototype.move = function() {
-    this.y += this.dy;
+    var now = new Date().getTime();
+    var delta = now - this.game.lastRender;
+    var k = delta/this.game.delay;
+    this.y += this.dy * k;
 };
 
 Bullet.prototype.explode = function() {
