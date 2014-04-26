@@ -78,10 +78,9 @@ PlasmaGunPrize.prototype.deactivate = function() {
 };
 
 PlasmaGunPrize.prototype.listener = function(e) {
-    if (e.keyCode != 32) {
-        return;
-    }
-    this.bate.fire();
+    if (e.keyCode == 32 || e.key == "Spacebar") {
+        this.bate.fire();
+    } else return;
 };
 
 PlasmaGunPrize.prototype.constructor = PlasmaGunPrize;
@@ -110,10 +109,9 @@ GluePrize.prototype.deactivate = function() {
     PlasmaGunPrize.prototype.deactivate.call(this);
 };
 GluePrize.prototype.listener = function(e) {
-    if (e.keyCode != 32) {
-        return;
-    }
-    return this.bate.sticky && this.bate.launch();
+    if (e.keyCode == 32 || e.key == "Spacebar") {
+        return this.bate.sticky && this.bate.launch();
+    } else return;
 };
 GluePrize.prototype.constructor = GluePrize;
 function SlowPrize() {

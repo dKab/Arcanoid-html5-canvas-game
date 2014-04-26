@@ -40,11 +40,12 @@ and open the template in the editor.
             game.drawAll();
 
             function pauseToggle(e) {
-                if (e.keyCode != 32)
+                if (e.key == "Spacebar" || e.keyCode == 32) {
+                    if (game.paused) {
+                        game.start();
+                    }
+                } else
                     return;
-                if (game.paused) {
-                    game.start();
-                }
             }
 
             window.addEventListener('keypress', pauseToggle);
