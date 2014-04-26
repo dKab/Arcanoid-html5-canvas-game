@@ -13,36 +13,18 @@ CanvasUtil.prototype.drawBrick = function(brick) {
             y = brick.y,
             height = brick.height,
             width = brick.width;
-
-    //var shadow = (!brick.below || !brick.nextInRow);
-    //console.log(shadow);
     ctx.save();
     ctx.translate(brick.x, brick.y);
     ctx.lineWidth = 2;
     ctx.fillStyle = brick.color;
-
-    /*
-     if (shadow) {
-     ctx.save();
-     ctx.shadowColor = 'rgba(0,0,0,0.25)';
-     ctx.shadowBlur = 20;
-     ctx.shadowOffsetX = 10;
-     ctx.shadowOffsetY = 10;
-     }
-     */
     ctx.fillRect(0, 0, width, height);
-
     ctx.beginPath();
     ctx.moveTo(width - 1, 0);
     ctx.lineTo(width - 1, height - 1);
     ctx.lineTo(0, height - 1);
     ctx.strokeStyle = "black";
     ctx.stroke();
-    /*
-     if (shadow) {
-     ctx.restore();
-     }
-     */
+
     if (tough) {
         ctx.save();
         ctx.lineWidth = 4;
@@ -65,7 +47,7 @@ CanvasUtil.prototype.drawBrick = function(brick) {
     }
     if (brick.isFirst()) {
         ctx.beginPath();
-        ctx.moveTo(0,0);
+        ctx.moveTo(0, 0);
         ctx.lineTo(0, height);
         ctx.stroke();
     }
@@ -73,8 +55,6 @@ CanvasUtil.prototype.drawBrick = function(brick) {
     ctx.restore();
     if (brick.isBlinking) {
         var stripWidth = Math.round(brick.width / 2.5);
-        //var now = new Date().getTime(),
-        //  phase = (now - brick.startedBlinking)/500;
         if (brick.currX - 2 * stripWidth > width - 2) {
             brick.stopBlinking();
         } else {
@@ -144,7 +124,6 @@ CanvasUtil.prototype.drawStrip = function(brick, stripWidth, fromX, toX, fromY, 
     ctx.closePath();
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fill();
-    //console.log('1');
     ctx.restore();
 };
 
@@ -192,10 +171,6 @@ CanvasUtil.prototype.drawCircle = function(color, x, y, rad) {
     ctx.arc(0, 0, rad, 0, 2 * Math.PI);
     ctx.closePath();
     ctx.fill();
-    //console.log(x);
-    //console.log(y);
-    //console.log(x);
-    // console.log(y);
     var grad = ctx.createRadialGradient(-3, -3, 0, 0, 0, rad);
     grad.addColorStop(0.150, 'rgba(255,255,255, 0.3)');
     grad.addColorStop(0.2, 'rgba(0,0,0,0.0)');
@@ -214,7 +189,6 @@ CanvasUtil.prototype.drawPrize = function(prize) {
             width = prize.width,
             height = prize.height,
             color = prize.color;
-    //ctx.fillStyle = bate.color;
     ctx.save();
     ctx.translate(x, y);
     ctx.beginPath();
@@ -248,7 +222,6 @@ CanvasUtil.prototype.drawPrize = function(prize) {
     ctx.textAlign = 'center';
     ctx.fillText(prize.letter, 0, 0, width);
     ctx.strokeStyle = 'black';
-    // ctx.strokeText(prize.letter, 0,0, width);
     ctx.restore();
 };
 
@@ -334,23 +307,6 @@ CanvasUtil.prototype.drawBate = function(bate, shadow) {
     ctx.fill();
     ctx.fillStyle = grad;
     ctx.fill();
-
-
-    //ctx.translate(x, y);
-
-    /*
-     ctx.fillStyle = 'rgba(0,0,0,0.05)';
-     ctx.arc(height / 2, height / 2, height / 2, Math.PI / 2,
-     Math.PI * 3 / 2);
-     ctx.lineTo(width - height / 2, 0);
-     ctx.arc(width - height / 2, height / 2, height / 2,
-     Math.PI * 3 / 2, Math.PI / 2);
-     ctx.lineTo(height / 2, height);
-     ctx.fill();
-     */
-
-
-
     ctx.restore();
 };
 
@@ -381,10 +337,6 @@ CanvasUtil.prototype.drawStatistics = function() {
     ctx.fillText('Level: ', 0, 120, this.canvas.width - this.fieldWidth - 100);
     ctx.fillText('Lives left: ', 0, 180, this.canvas.width - this.fieldWidth - 100);
     ctx.restore();
-    //var extPrize = new ExtendPrize(this.game, this.game.prizes);
-    //extPrize.placeAt()
-    //this.drawPrize();
-
 };
 
 CanvasUtil.prototype.drawDescription = function() {
@@ -400,7 +352,6 @@ CanvasUtil.prototype.drawDescription = function() {
     var ext = new ExtendPrize(this.game);
     ext.placeAt(0, 40);
     this.drawPrize(ext);
-    //ctx.save();
     ctx.font = 'bold 15px arial';
     ctx.fillText(' - Extend', 40, 54);
 
@@ -408,27 +359,27 @@ CanvasUtil.prototype.drawDescription = function() {
     glue.placeAt(0, 70);
     this.drawPrize(glue);
     ctx.fillText(' - Glue', 40, 84);
-    
+
     var slow = new SlowPrize(this.game);
     slow.placeAt(0, 100);
     this.drawPrize(slow);
     ctx.fillText(' - Slow down', 40, 114);
-    
+
     var dis = new DisruptionPrize(this.game);
     dis.placeAt(0, 130);
     this.drawPrize(dis);
-    ctx.fillText( ' - Disruption', 40, 144);
-    
+    ctx.fillText(' - Disruption', 40, 144);
+
     var pl = new PlasmaGunPrize(this.game);
     pl.placeAt(0, 160);
     this.drawPrize(pl);
-    ctx.fillText( ' - Plasma gun', 40, 174);
-    
+    ctx.fillText(' - Plasma gun', 40, 174);
+
     var life = new ExtraLifePrize(this.game);
     life.placeAt(0, 190);
     this.drawPrize(life);
     ctx.fillText(' - Extra life', 40, 204);
-    
+
     ctx.font = 'bold 30px arial';
     ctx.fillText('Controls: ', 0, 264);
     ctx.font = 'bold 15px arial';
@@ -464,7 +415,6 @@ CanvasUtil.prototype.updateLives = function() {
 
     for (var i = 0, offset = 0; i < this.game.lives; i++, offset += 15) {
         bate.placeAt(i * bate.width + offset, 0);
-        //bate.    
         this.drawBate(bate);
     }
     ctx.restore();
@@ -486,20 +436,13 @@ CanvasUtil.prototype.drawSeparator = function() {
 
 
 CanvasUtil.prototype.message = function(message) {
-    //this.clear();
-    //this.fillBlack();
     var ctx = this.context;
-    //ctx.save();
-    //ctx.beginPath();
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
-    //ctx.lineWidth = 4;
     ctx.font = 'bold 60px impact';
     ctx.textAlign = 'center';
-    //ctx.stroke();
     ctx.fillText(message, 300, this.canvas.height / 2 + 100, 500);
     ctx.strokeText(message, 300, this.canvas.height / 2 + 100, 500);
-    //ctx.restore();
 };
 
 

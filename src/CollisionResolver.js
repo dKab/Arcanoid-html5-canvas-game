@@ -48,15 +48,6 @@ CollisionResolver.prototype.conduct = function(ball) {
     var rowTop = Math.floor(ball.y / height), rowBot = Math.floor(ball.bottom / height),
             colLeft = Math.floor(ball.x / width),
             colRight = Math.floor(ball.right / width);
-    /*
-     var col = Math.floor(ball.center.x / width);
-     var row = Math.floor(ball.center.y / height);
-     var brick = bricks.getBrick(row, col);
-     if (brick) {
-     this.detectBrickCollision(ball, brick);
-     }
-     */
-
     var suspects = bricks.slice({
         rows: [rowTop, rowBot],
         cols: [colLeft, colRight]
@@ -64,15 +55,6 @@ CollisionResolver.prototype.conduct = function(ball) {
     if (suspects.length === 0) {
         return;
     }
-    /*
-     var i = 0;
-     while (
-     suspects[i] &&
-     !this.detectBrickCollision(ball, suspects[i])
-     && i < suspects.length) {
-     i++;
-     }
-     */
     var i = 0;
     while (
             suspects[i] &&
@@ -84,67 +66,24 @@ CollisionResolver.prototype.conduct = function(ball) {
 };
 
 CollisionResolver.prototype.detectBrickCollision = function(ball, brick) {
-
-    /*
-     if (ball.yVelocity > 0 && !brick.above && !brick.isUpper() && ball.bottom >= brick.y && (ball.x <= brick.right || ball.right >= brick.x)) {
-     console.log('top ' + brick.color);
-     ball.yVelocity = -ball.yVelocity;
-     //ball.y -= brick.y-ball.bottom;
-     //ball.y = Math.max(ball.x,0);
-     ball.y = brick.y - ball.height;
-     brick.collide(ball);
-     return true;
-     }
-     if (ball.yVelocity < 0 && !brick.below && ball.y <= brick.bottom && ball.center.x <= brick.right && ball.center.x >= brick.x) {
-     console.log('bot ' + brick.color);
-     
-     ball.yVelocity = -ball.yVelocity;
-     //ball.y = brick.bottom + (brick.bottom - ball.y);
-     ball.y = brick.bottom;
-     brick.collide(ball);
-     return true;
-     }
-     if (ball.xVelocity > 0 && !brick.prevInRow && ball.right >= brick.x) {
-     console.log('left ' + brick.color);
-     ball.xVelocity = -ball.xVelocity;
-     //ball.x = brick.x - (ball.right - brick.x)
-     ball.x = brick.x - ball.width;
-     brick.collide(ball);
-     return true;
-     }
-     
-     if (ball.xVelocity < 0 && !brick.nextInRow &&  ball.x <= brick.right) {
-     console.log('right ' + brick.color);
-     ball.xVelocity = -ball.xVelocity;
-     //ball.x = brick.right + (brick.right - ball.right);
-     ball.x = brick.right;
-     brick.collide(ball);
-     return true;
-     }
-     return false;
-     */
     var intersects = this.intersects(ball, brick);
     if (intersects) {
         switch (intersects) {
             case "top":
                 ball.y = brick.y - ball.height;
                 ball.yVelocity = -ball.yVelocity;
-                //console.log('top'+"("+brick.row+"," + brick.col+")");
                 break;
             case 'bottom':
                 ball.y = brick.bottom;
                 ball.yVelocity = -ball.yVelocity;
-                //console.log('bot'+"("+brick.row+"," + brick.col+")");
                 break;
             case 'left':
                 ball.x = brick.x - ball.width;
                 ball.xVelocity = -ball.xVelocity;
-                //console.log('left'+"("+brick.row+"," + brick.col+")");
                 break;
             case 'right':
                 ball.x = brick.right;
                 ball.xVelocity = -ball.xVelocity;
-                //console.log('right'+"("+brick.row+"," + brick.col+")");
                 break;
         }
         brick.collide(ball);
@@ -169,17 +108,6 @@ CollisionResolver.prototype.intersects = function(ball, brick) {
     if (d < ball.radius) {
         var side = this.getSide(brick, ball);
         //determin which side of rectangle collided
-        /*
-        var side;
-        if (ball.xVelocity > 0 && !brick.prevInRow && !brick.isFirst() && ball.right >= brick.x && ball.center.y <= brick.bottom && ball.center.y >= brick.y)
-            side = "left";
-        else if (ball.xVelocity < 0 && !brick.nextInRow && !brick.isLast() && ball.x <= brick.right && ball.center.y <= brick.bottom && ball.center.y >= brick.y)
-            side = 'right';
-        else if (ball.yVelocity > 0 && !brick.above && !brick.isUpper() && ball.bottom >= brick.y && ball.center.x >= brick.x && ball.center.x <= brick.right)
-            side = 'top';
-        else if (ball.yVelocity < 0 && !brick.below && ball.y <= brick.bottom && ball.center.x >= brick.x && ball.center.x <= brick.right)
-            side = 'bottom';
-            */
         return side;
     }
     return false;
@@ -235,26 +163,26 @@ CollisionResolver.prototype.getSide = function(brick, ball) {
 
     var left = {
         x: brick.x,
-        min: brick.y-ball.radius,
-        max: brick.bottom+ball.radius,
+        min: brick.y - ball.radius,
+        max: brick.bottom + ball.radius,
         which: 'left'
     },
     right = {
         x: brick.right,
-        min: brick.y-ball.radius,
-        max: brick.bottom+ball.radius,
+        min: brick.y - ball.radius,
+        max: brick.bottom + ball.radius,
         which: 'right'
     },
     top = {
         y: brick.y,
-        min: brick.x-ball.radius,
-        max: brick.right+ball.radius,
+        min: brick.x - ball.radius,
+        max: brick.right + ball.radius,
         which: "top"
     },
     bot = {
         y: brick.bottom,
-        min: brick.x-ball.radius,
-        max: brick.right+ball.radius,
+        min: brick.x - ball.radius,
+        max: brick.right + ball.radius,
         which: 'bottom'
     },
     y1 = ball.center.y,
@@ -273,11 +201,6 @@ CollisionResolver.prototype.getSide = function(brick, ball) {
             sides.push(bound[i].which);
         }
     }
-    /*
-    if (sides.length < 2) {
-        return;
-    }
-*/
     for (var i = 0; i < sides.length; i++) {
         switch (sides[i]) {
             case 'top':
@@ -304,12 +227,11 @@ CollisionResolver.prototype.getSide = function(brick, ball) {
     }
     var which;
     for (var i = 0; i < sides.length; i++) {
-        if (!sides[i]) 
+        if (!sides[i])
             continue;
-        else which = sides[i];
+        else
+            which = sides[i];
     }
-
-
     return which;
 };
 
@@ -367,17 +289,11 @@ CollisionResolver.prototype.reflectAtAngle = function(ball, deg) {
 
     var dy = -Math.abs(v * Math.sin(rad)),
             dx = v * Math.cos(rad);
-
-
-
-    //ball.yVelocity = -Math.abs(v * Math.sin(rad));
     ball.y = this.game.bate.y - ball.height;
-
     return {
         x: dx,
         y: dy
     };
-    //ball.xVelocity = v * Math.cos(rad);
 };
 
 CollisionResolver.prototype.handleBateCollision = function(ball, bate) {
@@ -428,7 +344,6 @@ CollisionResolver.prototype.handleBateCollision = function(ball, bate) {
             'ball': ball,
             'launchSpeed': speed
         };
-        //bate.launchVel = speed;
     } else {
         ball.yVelocity = potentialY;
         ball.xVelocity = potentialX;

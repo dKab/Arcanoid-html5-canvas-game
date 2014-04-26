@@ -59,14 +59,11 @@ PlasmaGunPrize.prototype.activate = function() {
     this.game.restore();
     var x = this.game.bate.x,
             y = this.game.bate.y;
-    //console.log(this.game);
     this.game.bate = new ArmedBate(this.game);
     this.game.bate.placeAt(x, y);
-    //console.log(this.game.bate);
     var listener = this.listener.bind(this.game);
     window.addEventListener('keypress', listener);
     this.game.currentListener = listener;
-    //this.game.bate = new St;
     this.game.activePowerup = this.constructor;
 };
 
@@ -100,14 +97,12 @@ GluePrize.prototype.activate = function() {
     this.game.restore();
     var x = this.game.bate.x,
             y = this.game.bate.y;
-    //console.log(this.game);
     this.game.bate = new StickyBate(this.game);
     this.game.bate.placeAt(x, y);
     console.log(this.game.bate);
     var listener = this.listener.bind(this.game);
     window.addEventListener('keypress', listener);
     this.game.listeners = listener;
-    //this.game.bate = new St;
     this.game.activePowerup = this.constructor;
 };
 GluePrize.prototype.deactivate = function() {
@@ -201,7 +196,7 @@ ExtraLifePrize.prototype.constructor = ExtraLifePrize;
 function PrizeCollection(game) {
     this.prizes = [];
     this.factory = new PrizeFactory(game);
-    
+
 }
 
 PrizeCollection.prototype.add = function(prize) {
@@ -259,7 +254,8 @@ PrizeFactory.prototype.create = function(type) {
         case 'ExtraLifePrize':
             prize = new ExtraLifePrize(this.game, this.game.prizes);
             break;
-        default: return null;
+        default:
+            return null;
     }
     return prize;
 };

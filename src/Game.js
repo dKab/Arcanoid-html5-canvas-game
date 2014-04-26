@@ -1,38 +1,25 @@
 function Game() {
     this.fps = 80;
-    //this.canvas = document.getElementById('game_field');
-    //this.canvas.width = this.canvas.height = 500;
     var canvas = document.getElementById('game_field');
     this.height = 640;
     this.width = 598;
     this.canvasUtil = new CanvasUtil(this, canvas, this.width, this.height);
-    //this.ctx = this.canvas.getContext('2d');
     this.stage = 1;
     this.lives = 3;
     this.totalScore = 0;
     this.paused = true;
     this.lastRender = 0;
-
-
     this.wasPausedAt = null;
-
     this.generatePrizes = 1;
-
     this.currentListener = null;
-
     this.prizeTypes = ['ExtendPrize', 'GluePrize', 'SlowPrize', 'PlasmaGunPrize', 'DisruptionPrize',
         'ExtraLifePrize'];
     this.prizePossibility = [0, 0, 0, 1];
-
     this.prizes = new PrizeCollection(this);
-
     this.bullets = new BulletCollection(this);
-
     this.activePowerup = null;
     this.collisionResolver = new CollisionResolver(this);
-
     var bate = new Bate(this);
-    //bate.placeAt(256 - bate.width / 2, 450);
     this.bate = bate;
     this.balls = [];
     var ball = new Ball(this);
@@ -80,7 +67,7 @@ function Game() {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             ['y', 'y', 'y', 'y', 'y', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            ['l', 'l', 'l', 'l', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b']  
+            ['l', 'l', 'l', 'l', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b']
         ],
         4: [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -99,19 +86,19 @@ function Game() {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 'w', 'w', 'w', 'w', 'w', 0, 'r','r','r','r','r', 0],
-            [0, 'r', 'r', 'r', 'r', 'r', 0, 'l','l','l','l','l', 0],
-            [0, 'p', 'p', 'p', 'p', 'p', 0, 'w','w','w','w','w', 0],
-            [0, 'g', 'g', 'g', 'g', 'g', 0, 'o','o','o','o','o', 0],
-            [0, 'b', 'b', 'b', 'b', 'b', 0, 'p','p','p','p','p', 0],
-            [0, 'y', 'y', 'y', 'y', 'y', 0, 'g','g','g','g','g', 0],
-            [0, 'w', 'w', 'w', 'w', 'w', 0, 'r','r','r','r','r', 0],
-            [0, 'l', 'l', 'l', 'l', 'l', 0, 'a','a','a','a','a', 0],
-            [0, 'r', 'r', 'r', 'r', 'r', 0, 'r','r','r','r','r', 0],
-            [0, 'w', 'w', 'w', 'w', 'w', 0, 'y','y','y','y','y', 0],
-            [0, 'o', 'o', 'o', 'o', 'o', 0, 'b','b','b','b','b', 0],
-            [0, 'w', 'w', 'w', 'w', 'w', 0, 'r','r','r','r','r', 0],
-            [0, 'y', 'y', 'y', 'y', 'y', 0, 'g','g','g','g','g', 0],
+            [0, 'w', 'w', 'w', 'w', 'w', 0, 'r', 'r', 'r', 'r', 'r', 0],
+            [0, 'r', 'r', 'r', 'r', 'r', 0, 'l', 'l', 'l', 'l', 'l', 0],
+            [0, 'p', 'p', 'p', 'p', 'p', 0, 'w', 'w', 'w', 'w', 'w', 0],
+            [0, 'g', 'g', 'g', 'g', 'g', 0, 'o', 'o', 'o', 'o', 'o', 0],
+            [0, 'b', 'b', 'b', 'b', 'b', 0, 'p', 'p', 'p', 'p', 'p', 0],
+            [0, 'y', 'y', 'y', 'y', 'y', 0, 'g', 'g', 'g', 'g', 'g', 0],
+            [0, 'w', 'w', 'w', 'w', 'w', 0, 'r', 'r', 'r', 'r', 'r', 0],
+            [0, 'l', 'l', 'l', 'l', 'l', 0, 'a', 'a', 'a', 'a', 'a', 0],
+            [0, 'r', 'r', 'r', 'r', 'r', 0, 'r', 'r', 'r', 'r', 'r', 0],
+            [0, 'w', 'w', 'w', 'w', 'w', 0, 'y', 'y', 'y', 'y', 'y', 0],
+            [0, 'o', 'o', 'o', 'o', 'o', 0, 'b', 'b', 'b', 'b', 'b', 0],
+            [0, 'w', 'w', 'w', 'w', 'w', 0, 'r', 'r', 'r', 'r', 'r', 0],
+            [0, 'y', 'y', 'y', 'y', 'y', 0, 'g', 'g', 'g', 'g', 'g', 0],
         ],
         6: [
             ['b', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -141,17 +128,13 @@ Game.prototype.gameloop = function() {
         this.lastRender = new Date().getTime();
     var current = new Date().getTime(),
             delta = current - this.lastRender;
-
     if (delta >= this.delay && !this.paused) {
-        //console.log('hi');
         this.updateAll();
         if (this.paused)
             return;
         this.drawAll();
         this.lastRender = new Date().getTime();
     }
-    //var game = this;
-    //console.log(this);
     this.loop = requestAnimationFrame(Game.prototype.gameloop.bind(this));
 };
 
@@ -163,11 +146,7 @@ Game.prototype.restore = function() {
 Game.prototype.randomPrize = function() {
     var int = Math.floor(Math.random() * (this.prizeTypes.length - 0.0001)),
             type = this.prizeTypes[int];
-    console.log(int);
-    console.log('type: ' + type);
-    //var prize = new window[type](this, this.prizes);
     var prize = this.prizes.create(type);
-    //this.prizes.add(prize);
     return prize;
 };
 
@@ -196,8 +175,6 @@ Game.prototype.renderLevel = function() {
     this.toInitialPosition();
     this.prizes.purge();
     this.bullets.purge();
-    // this.balls[0].xVelocity = 0;
-    //this.balls[0].yVelocity =0;
     this.drawAll();
 };
 
@@ -228,13 +205,8 @@ Game.prototype.toInitialPosition = function() {
 Game.prototype.start = function() {
     var game = this;
     game.paused = false;
-    //this.renderLevel();
     document.addEventListener('mousemove', function(e) {
         var offset = game.canvasUtil.canvas.getBoundingClientRect().left;
-        //console.log(game);
-        //console.log(game.canvas);
-
-        // var min = Math.min(((e.clientX-offset) - this.bate.width/2), 0);
         var x = (e.clientX - offset) - game.bate.width / 2;
         if (x < 0) {
             x = 0;
@@ -243,12 +215,6 @@ Game.prototype.start = function() {
         }
         game.bate.x = x;
     });
-    /*
-     this.gameloop = setInterval(function() {
-     game.updateAll();
-     game.drawAll();
-     }, 1000 / this.fps);
-     */
     if (this.wasPausedAt) {
         var now = new Date().getTime();
         var pauseTime = now - this.wasPausedAt;
@@ -266,7 +232,6 @@ Object.defineProperty(Game.prototype, 'delay', {
 });
 
 Game.prototype.pause = function(gameover) {
-    //clearInterval(this.gameloop);
     cancelAnimationFrame(this.loop);
     this.wasPausedAt = new Date().getTime();
     this.paused = true;
@@ -282,9 +247,6 @@ Game.prototype.nextLevel = function() {
         this.renderLevel();
 
     }
-    //this.inProgress = false;
-
-
 };
 
 Game.prototype.drawAll = function() {
@@ -300,7 +262,6 @@ Game.prototype.drawAll = function() {
 };
 
 Game.prototype.updateAll = function() {
-    //this.balls.forEach(Ball.prototype.update);
     for (var i = 0; i < this.balls.length; i++) {
         this.balls[i].update();
     }
@@ -308,25 +269,8 @@ Game.prototype.updateAll = function() {
     this.bate.update();
     this.bullets.update();
     this.prizes.update();
-    /*
-     this.balls.forEach(function(val) {
-     this.collisionResolver.watch(val);
-     }, this);
-     */
-    //this.collisionResolver.watch(this.balls[0]);
     this.collisionResolver.update();
-
     this.canvasUtil.updateStatistics(this.totalScore, this.stage);
-    /*
-     var score = document.getElementById('score'),
-     level = document.getElementById('level'),
-     lives = document.getElementById('lives');
-     
-     score.innerHTML = this.totalScore;
-     level.innerHTML = this.stage;
-     lives.innerHTML = this.lives;
-     */
-
 };
 
 
@@ -355,14 +299,10 @@ function BricksCollection(game) {
         'o': '#FFA500',
         'w': '#FFFFFF',
         'l': '#00FF00',
-        'a': '#00FFFF'/*
-         's': 'silver',
-         'u': 'unbreakable'*/
+        'a': '#00FFFF'
     };
     this.game = game;
     this.bricks = [];
-    //this.cols = setup.cols;
-    //this.length = setup.rows * setup.cols;
     var stage = this.game.levels[this.game.stage];
     var rows = stage.length;
     for (var r = 0; r < rows; r++) {
@@ -400,19 +340,6 @@ function BricksCollection(game) {
                     col++;
                 }, this);
     }
-
-    /*
-     for (var i = 0; i < setup.rows; i++) {
-     this.bricks.push([]);
-     for (var k = 0; k < setup.cols; k++) {
-     this.bricks[i][k] = new Brick(this.game, colors[i], {
-     row: i,
-     col: k,
-     proportions: this.brickProportions
-     }, this);
-     }
-     }
-     */
 }
 
 BricksCollection.prototype.draw = function() {
@@ -466,8 +393,6 @@ BricksCollection.prototype.slice = function(obj) {
             }
         }
     }
-
-
     return exist;
 };
 BricksCollection.prototype.above = function(brick) {
@@ -516,7 +441,6 @@ Object.defineProperty(BricksCollection.prototype, 'cols', {
 });
 
 BricksCollection.prototype.getBrick = function(row, col) {
-    // console.log(row);
     if (this.bricks[row]) {
         var brick = this.bricks[row][col];
     }
