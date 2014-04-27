@@ -274,8 +274,9 @@ CollisionResolver.prototype.conductBullet = function(bullet) {
     var col = Math.floor(bullet.center.x / width);
     var row = Math.floor(bullet.center.y / height);
     var brick = bricks.getBrick(row, col);
-    if (brick && !brick.below) {
-        brick.collide(bullet);
+    if (brick) {
+        if (!brick.below && bullet.stage == this.game.stage)
+            brick.collide(bullet);
         bullet.explode();
     }
     if (bullet.bottom <= 0) {

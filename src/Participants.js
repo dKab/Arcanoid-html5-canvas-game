@@ -122,11 +122,11 @@ Ball.prototype.die = function() {
     }, this);
     this.game.collisionResolver.unregisterBall(this);
 
-    if (this.game.balls.length == 1) {
+    if (this.game.balls.length == 1 && !this.game.paused) {
         this.game.restore();
     }
 
-    if (this.game.balls.length === 0) {
+    if (this.game.balls.length === 0 && !this.game.paused) {
         this.game.decrementLives();
     }
 
@@ -363,6 +363,7 @@ function Bullet(game, bulletsCollection) {
     this.color = '#F5FFFA';
     this.dy = -7;
     this.power = 1;
+    this.stage = this.game.stage;
     this.collection = bulletsCollection;
 }
 
@@ -381,10 +382,8 @@ Bullet.prototype.move = function() {
 
 Bullet.prototype.explode = function() {
     this.collection.remove(this);
+    this.game.collisionResolver.unregisterBullet(this);
 };
-
-
-
 
 Bullet.prototype.constructor = Bullet;
 
@@ -422,7 +421,9 @@ BulletCollection.prototype.create = function() {
 };
 
 BulletCollection.prototype.purge = function() {
-    this.bullets = [];
+    this.bullets.forEach(function(val) {
+        val.explode();
+    });
 };
 
 BulletCollection.prototype.constructor = BulletCollection;

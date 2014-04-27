@@ -4,7 +4,7 @@ function Game() {
     this.height = 640;
     this.width = 598;
     this.canvasUtil = new CanvasUtil(this, canvas, this.width, this.height);
-    this.stage = 1;
+    this.stage = 2;
     this.lives = 3;
     this.totalScore = 0;
     this.paused = true;
@@ -116,7 +116,6 @@ function Game() {
         ]
     };
 
-
     this.renderLevel();
 
 
@@ -134,6 +133,9 @@ Game.prototype.gameloop = function() {
             return;
         this.drawAll();
         this.lastRender = new Date().getTime();
+        if (this.bricks.length == 0) {
+            this.nextLevel();
+        }
     }
     this.loop = requestAnimationFrame(Game.prototype.gameloop.bind(this));
 };
@@ -171,10 +173,13 @@ Game.prototype.renderLevel = function() {
     this.canvasUtil.drawStatistics();
     this.canvasUtil.updateLives();
     this.canvasUtil.drawDescription();
-    this.bricks = new BricksCollection(this);
     this.toInitialPosition();
     this.prizes.purge();
     this.bullets.purge();
+        //this.collisionResolver.update();
+    this.bricks = new BricksCollection(this);
+
+
     this.drawAll();
 };
 
@@ -196,6 +201,9 @@ Game.prototype.decrementLives = function() {
 
 Game.prototype.toInitialPosition = function() {
     this.bate.placeAt(this.width / 2 - this.bate.width / 2, this.height - 60);
+    this.balls.forEach(function(val) {
+      val.die();  
+    });
     this.balls = [];
     this.balls.push(new Ball(this));
     this.balls[0].placeAt(this.width / 2 - this.balls[0].radius, this.height - 60 - this.balls[0].height);
@@ -244,6 +252,8 @@ Game.prototype.nextLevel = function() {
         this.win();
     else {
         this.restore();
+        this.updateAll();
+        this.drawAll();
         this.renderLevel();
 
     }
@@ -275,6 +285,7 @@ Game.prototype.updateAll = function() {
 
 
 function BricksCollection(game) {
+    this.length=0;
     this.brickProportions = {
         height: 23,
         width: 46
@@ -324,6 +335,7 @@ function BricksCollection(game) {
                                 col: col,
                                 proportions: this.brickProportions
                             }, this));
+                            this.length++;
                             break;
                         case 0:
                             this.bricks[r].push(null);
@@ -335,6 +347,7 @@ function BricksCollection(game) {
                                 proportions: this.brickProportions
                             }, this
                                     ));
+                            this.length++;
                             break;
                     }
                     col++;
@@ -353,6 +366,7 @@ BricksCollection.prototype.draw = function() {
         }
     });
 };
+/*
 Object.defineProperty(BricksCollection.prototype, 'length', {
     get: function() {
         var i = 0;
@@ -367,6 +381,7 @@ Object.defineProperty(BricksCollection.prototype, 'length', {
         return i;
     }
 });
+*/
 BricksCollection.prototype.add = function(brick) {
     if (brick instanceof Brick) {
         var row = brick.position.row, col = brick.position.col;
