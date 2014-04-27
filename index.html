@@ -37,6 +37,7 @@ and open the template in the editor.
             game.drawAll();
             function pauseToggle(e) {
                 if (e.key == "Spacebar" || e.keyCode == 32) {
+                    e.preventDefault();
                     if (game.end) {
                         game.restart();
                     } else if (game.paused) {
