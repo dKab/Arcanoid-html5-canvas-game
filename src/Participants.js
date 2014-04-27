@@ -138,12 +138,29 @@ function Bate() {
     this.width = 70;
     this.height = 20;
     this.normalWidth = 70;
+    this.step = 10;
+    this.direction = 0;
 }
 Bate.prototype = Object.create(GameItem.prototype);
 
+Bate.prototype.move = function() {
+    var x = this.x;
+    x += (this.direction * this.step);
+            if (x < 0) {
+            x = 0;
+        } else if (x+this.width > this.game.width) {
+            x = this.game.width - this.width;
+        }
+        this.x = x;
+};
 
+Bate.prototype.startMoving = function(keyCode) {
+    this.direction = (keyCode == 39)? 1 : -1;
+};
 
-
+Bate.prototype.stop = function() {
+  this.direction = 0;  
+};
 
 Bate.prototype.draw = function() {
     var color = this.color;
@@ -161,6 +178,7 @@ Bate.prototype.update = function() {
     } else {
         delete this.finalWidth;
     }
+    this.move();
 };
 
 Bate.prototype.extend = function() {
@@ -210,12 +228,18 @@ ArmedBate.prototype.fire = function() {
         return;
     } else {
         var left = this.game.bullets.create();
-        left.placeAt(this.x + 5, this.y + left.height);
+        left.placeAt(this.x + 5, this.y - left.height);
         var right = this.game.bullets.create();
-        right.placeAt(this.right - 5 - right.width, this.y + right.height);
+        right.placeAt(this.right - 5 - right.width, this.y - right.height);
         this.lastFired = new Date().getTime();
     }
 };
+
+ArmedBate.prototype.draw = function() {
+  Bate.prototype.draw.call(this);
+  this.game.canvasUtil.lazerAim();
+};
+
 
 ArmedBate.prototype.constructor = ArmedBate;
 

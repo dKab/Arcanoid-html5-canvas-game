@@ -1,10 +1,10 @@
 function Game() {
-    this.fps = 80;
+    this.fps = 60;
     var canvas = document.getElementById('game_field');
     this.height = 640;
     this.width = 598;
     this.canvasUtil = new CanvasUtil(this, canvas, this.width, this.height);
-    this.stage = 2;
+    this.stage = 1;
     this.lives = 3;
     this.totalScore = 0;
     this.paused = true;
@@ -12,6 +12,7 @@ function Game() {
     this.wasPausedAt = null;
     this.generatePrizes = 1;
     this.currentListener = null;
+    this.end = false;
     this.prizeTypes = ['ExtendPrize', 'GluePrize', 'SlowPrize', 'PlasmaGunPrize', 'DisruptionPrize',
         'ExtraLifePrize'];
     this.prizePossibility = [0, 0, 0, 1];
@@ -154,14 +155,25 @@ Game.prototype.randomPrize = function() {
 
 Game.prototype.win = function() {
     this.drawAll();
-    this.canvasUtil.message('You win! \n Your score: ' + this.totalScore);
-    window.removeEventListener('keypress', pauseToggle);
+    this.end = true;
+    this.canvasUtil.message('You win! \n Your score: ' + this.totalScore, 300, this.height / 2 + 100);
+    this.canvasUtil.message('press space to restart', 300, this.height / 2 + 150);
 };
 
 Game.prototype.over = function() {
     this.pause();
-    this.canvasUtil.message('Game over! \n Your score: ' + this.totalScore);
-    window.removeEventListener('keypress', pauseToggle);
+    this.end = true;
+    this.canvasUtil.message('Game over! \n Your score: ' + this.totalScore, 300, this.height / 2 + 100);
+    this.canvasUtil.message('press space to restart', 300, this.height / 2 + 150);
+
+};
+
+Game.prototype.restart = function() {
+    this.end = false;
+    this.stage = 0;
+    this.totalScore = 0;
+    this.lives = 3;
+    this.nextLevel();
 };
 
 Game.prototype.renderLevel = function() {
@@ -176,7 +188,7 @@ Game.prototype.renderLevel = function() {
     this.toInitialPosition();
     this.prizes.purge();
     this.bullets.purge();
-        //this.collisionResolver.update();
+    //this.collisionResolver.update();
     this.bricks = new BricksCollection(this);
 
 
@@ -202,7 +214,7 @@ Game.prototype.decrementLives = function() {
 Game.prototype.toInitialPosition = function() {
     this.bate.placeAt(this.width / 2 - this.bate.width / 2, this.height - 60);
     this.balls.forEach(function(val) {
-      val.die();  
+        val.die();
     });
     this.balls = [];
     this.balls.push(new Ball(this));
@@ -212,16 +224,30 @@ Game.prototype.toInitialPosition = function() {
 
 Game.prototype.start = function() {
     var game = this;
+    this.end = false;
     game.paused = false;
-    document.addEventListener('mousemove', function(e) {
-        var offset = game.canvasUtil.canvas.getBoundingClientRect().left;
-        var x = (e.clientX - offset) - game.bate.width / 2;
-        if (x < 0) {
-            x = 0;
-        } else if (x + game.bate.width > game.width) {
-            x = game.width - game.bate.width;
+    /*
+     document.addEventListener('mousemove', function(e) {
+     var offset = game.canvasUtil.canvas.getBoundingClientRect().left;
+     var x = (e.clientX - offset) - game.bate.width / 2;
+     if (x < 0) {
+     x = 0;
+     } else if (x + game.bate.width > game.width) {
+     x = game.width - game.bate.width;
+     }
+     game.bate.x = x;
+     });
+     */
+    document.addEventListener('keydown', function(e) {
+        if (e.keyCode === 39 || e.keyCode === 37) {
+            game.bate.startMoving(e.keyCode);
         }
-        game.bate.x = x;
+    });
+
+    document.addEventListener('keyup', function(e) {
+        if (e.keyCode === 39 || e.keyCode === 37) {
+            game.bate.stop();
+        }
     });
     if (this.wasPausedAt) {
         var now = new Date().getTime();
@@ -240,6 +266,8 @@ Object.defineProperty(Game.prototype, 'delay', {
 });
 
 Game.prototype.pause = function(gameover) {
+    if (this.paused)
+        return;
     cancelAnimationFrame(this.loop);
     this.wasPausedAt = new Date().getTime();
     this.paused = true;
@@ -255,7 +283,6 @@ Game.prototype.nextLevel = function() {
         this.updateAll();
         this.drawAll();
         this.renderLevel();
-
     }
 };
 
@@ -285,7 +312,7 @@ Game.prototype.updateAll = function() {
 
 
 function BricksCollection(game) {
-    this.length=0;
+    this.length = 0;
     this.brickProportions = {
         height: 23,
         width: 46
@@ -366,22 +393,7 @@ BricksCollection.prototype.draw = function() {
         }
     });
 };
-/*
-Object.defineProperty(BricksCollection.prototype, 'length', {
-    get: function() {
-        var i = 0;
-        for (var row = 0; row < this.rows; row++) {
-            this.bricks[row].forEach(function(val) {
-                if (val instanceof Brick && !(val instanceof UnbreakableBrick)) {
-                    i++;
-                }
-                ;
-            });
-        }
-        return i;
-    }
-});
-*/
+
 BricksCollection.prototype.add = function(brick) {
     if (brick instanceof Brick) {
         var row = brick.position.row, col = brick.position.col;
@@ -441,6 +453,17 @@ BricksCollection.prototype.prevInRow = function(brick) {
     if (prev < 0)
         return null;
     return this.bricks[row][prev];
+};
+
+BricksCollection.prototype.getLowerBrick = function(x) {
+    var col = Math.floor(x / this.brickProportions.width);
+    for (var i = this.bricks.length - 1; i >= 0; i--) {
+        var brick = this.getBrick(i, col);
+        if (!brick)
+            continue;
+        else
+            return brick;
+    }
 };
 
 Object.defineProperty(BricksCollection.prototype, 'rows', {

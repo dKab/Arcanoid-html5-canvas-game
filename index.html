@@ -15,9 +15,7 @@ and open the template in the editor.
                 width: 898 px;
                 margin: 0 auto;
                 border: 2px solid silver;
-                //border-left: 4px solid silver;
-
-                cursor: none;
+                //border-left: 4px solid silver
             }
             body {
                 background-color: #000000;
@@ -35,19 +33,18 @@ and open the template in the editor.
             Your browser  doesn't support canvas!
         </canvas>
         <script type="text/javascript">
-
             var game = new Game();
             game.drawAll();
-
             function pauseToggle(e) {
                 if (e.key == "Spacebar" || e.keyCode == 32) {
-                    if (game.paused) {
+                    if (game.end) {
+                        game.restart();
+                    } else if (game.paused) {
                         game.start();
                     }
                 } else
                     return;
             }
-
             window.addEventListener('keypress', pauseToggle);
         </script>
     </body>

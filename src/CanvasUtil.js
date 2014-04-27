@@ -307,6 +307,28 @@ CanvasUtil.prototype.drawBate = function(bate, shadow) {
     ctx.fill();
     ctx.fillStyle = grad;
     ctx.fill();
+    
+    ctx.restore();
+};
+
+
+CanvasUtil.prototype.lazerAim = function() {
+    var ctx = this.context,
+            toX, length;
+    var fromX = toX = this.game.bate.x + this.game.bate.width / 2,
+            fromY = this.game.bate.y;
+    var brick = this.game.bricks.getLowerBrick(fromX);
+
+    var toY = (brick) ? brick.bottom : 0;
+    length = fromY - toY;
+    ctx.save();
+    ctx.translate(fromX, fromY);
+    ctx.strokeStyle= 'rgba(255, 0, 0, 0.7)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -length);
+    ctx.stroke();
     ctx.restore();
 };
 
@@ -384,7 +406,7 @@ CanvasUtil.prototype.drawDescription = function() {
     ctx.fillText('Controls: ', 0, 264);
     ctx.font = 'bold 15px arial';
     ctx.fillText('fire/continue - <space>', 0, 290);
-    ctx.fillText('move - <mouse>', 0, 320)
+    ctx.fillText('move - <arrows>', 0, 320)
 
     ctx.restore();
 };
@@ -435,14 +457,16 @@ CanvasUtil.prototype.drawSeparator = function() {
 };
 
 
-CanvasUtil.prototype.message = function(message) {
+CanvasUtil.prototype.message = function(message, x, y) {
     var ctx = this.context;
+    ctx.save();
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
-    ctx.font = 'bold 60px impact';
+    ctx.font = 'bold 40px arial';
     ctx.textAlign = 'center';
-    ctx.fillText(message, 300, this.canvas.height / 2 + 100, 500);
-    ctx.strokeText(message, 300, this.canvas.height / 2 + 100, 500);
+    ctx.fillText(message, x, y, 500);
+    ctx.strokeText(message, x, y, 500);
+    ctx.restore();
 };
 
 
