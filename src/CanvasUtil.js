@@ -14,7 +14,7 @@ CanvasUtil.prototype.drawBrick = function(brick) {
             height = brick.height,
             width = brick.width;
     ctx.save();
-    ctx.translate(brick.x, brick.y);
+    ctx.translate(x, y);
     ctx.lineWidth = 2;
     ctx.fillStyle = brick.color;
     ctx.fillRect(0, 0, width, height);
@@ -218,7 +218,7 @@ CanvasUtil.prototype.drawPrize = function(prize) {
     ctx.shadowColor = 'black';
     ctx.shadowOffsetX = 3;
     ctx.shadowOffsetY = 0;
-    ctx.font = "bold 14pt Courier"
+    ctx.font = "bold 14pt Courier";
     ctx.textAlign = 'center';
     ctx.fillText(prize.letter, 0, 0, width);
     ctx.strokeStyle = 'black';
@@ -314,8 +314,8 @@ CanvasUtil.prototype.drawBate = function(bate, shadow) {
 
 CanvasUtil.prototype.lazerAim = function() {
     var ctx = this.context,
-            toX, length;
-    var fromX = toX = this.game.bate.x + this.game.bate.width / 2,
+            length;
+    var fromX = this.game.bate.x + this.game.bate.width / 2,
             fromY = this.game.bate.y;
     var brick = this.game.bricks.getLowerBrick(fromX);
 
@@ -406,7 +406,7 @@ CanvasUtil.prototype.drawDescription = function() {
     ctx.fillText('Controls: ', 0, 264);
     ctx.font = 'bold 15px arial';
     ctx.fillText('fire/continue - <space>', 0, 290);
-    ctx.fillText('move - <arrows>', 0, 320)
+    ctx.fillText('move - <arrows>', 0, 320);
 
     ctx.restore();
 };

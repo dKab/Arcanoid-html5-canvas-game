@@ -268,6 +268,7 @@ Object.defineProperty(Game.prototype, 'delay', {
 Game.prototype.pause = function(gameover) {
     if (this.paused)
         return;
+    var cancelAnimationFrame = cancelAnimationFrame || clearTimeout;
     cancelAnimationFrame(this.loop);
     this.wasPausedAt = new Date().getTime();
     this.paused = true;

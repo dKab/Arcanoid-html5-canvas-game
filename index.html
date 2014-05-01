@@ -33,10 +33,19 @@ and open the template in the editor.
             Your browser  doesn't support canvas!
         </canvas>
         <script type="text/javascript">
+            (function() {
+                var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame ||
+                        function(/* function */ callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+                ;
+                window.requestAnimationFrame = requestAnimationFrame;
+            })();
             var game = new Game();
             game.drawAll();
             function pauseToggle(e) {
-                if (e.key == "Spacebar" || e.keyCode == 32) {
+                if (e.key == "Spacebar" || e.keyCode == 32 || e.key == " ") {
                     e.preventDefault();
                     if (game.end) {
                         game.restart();

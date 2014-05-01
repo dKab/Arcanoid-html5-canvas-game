@@ -59,7 +59,7 @@ CollisionResolver.prototype.conduct = function(ball) {
     while (
             suspects[i] &&
             i < suspects.length) {
-        this.detectBrickCollision(ball, suspects[i])
+        this.detectBrickCollision(ball, suspects[i]);
         i++;
     }
 
