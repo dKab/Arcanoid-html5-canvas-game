@@ -2,4 +2,4 @@ Arcanoid-html5-canvas-game
 ==========================
 Клон популярной игры Arkanoid на чистом JavaScript.
 
-Поиграть можно здесь: http://jsfiddle.net/y8YcE/35/embedded/result/
+Поиграть можно здесь: http://arkanoid.lovetocode.ru/
